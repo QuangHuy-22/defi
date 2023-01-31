@@ -1,0 +1,33 @@
+.container {
+  padding-top: 5%;
+  padding-bottom: 20%;
+  height: 100vh;
+  background-image: linear-gradient(to right, #421e64, rgb(128, 0, 64));
+  display: block;
+  /* justify-content: center; */
+}
+.tuyem {
+  max-width: 980px;
+  margin: 0 auto;
+  height: auto;
+}
+.buttonConnect {
+  text-align: right;
+}
+.aroundBotton {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 100px;
+}
+.module {
+  border-width: 4px;
+  border-style: solid;
+  border-image: linear-gradient(to right, darkblue, darkorchid) 1;
+  border-radius: inherit;
+  margin: 0 auto;
+  max-width: 665px;
+  padding: 15px;
+  border-radius: 50%;
+}
+

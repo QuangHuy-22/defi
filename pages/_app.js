@@ -1,16 +1,17 @@
-import { NextUIProvider } from '@nextui-org/react';
+import { NextUIProvider } from "@nextui-org/react";
 import { createTheme } from "@nextui-org/react";
-import Defiswap from './defiswap';
+import Defiswap from "./defiswap";
+import "../styles/style.css"
 
 const darkTheme = createTheme({
-  type: 'dark',
+  type: "dark",
 });
 
 function MyApp({ Component, pageProps }) {
   return (
-    <NextUIProvider theme={darkTheme}>
-      <Component {...pageProps} />
-      <Defiswap />
+    <NextUIProvider  theme={darkTheme}>
+      {/* <Component {...pageProps} /> */}
+      <Defiswap  />
     </NextUIProvider>
   );
 }
