@@ -388,7 +388,7 @@ export default function Defiswap() {
                     </div>
                     <div style={{
                           position: "absolute",
-                          right: "15px",
+                          right: "7px",
                           top: "3px"
                     }}>
                       <a onClick={fromHandler}>
@@ -400,11 +400,12 @@ export default function Defiswap() {
                             fontWeight: "400",
                             color: "white",
                             ml: "$10",
-                            fontSize: "20px",
+                            fontSize: "15px",
                             background: "#363636",
                             paddingRight: "5px",
                             borderRadius: "30px",
-                            padding:"3px 7px 0px 3px"
+                            padding: "1px 10px 0px 10px",
+                            marginTop: "6px"
                           }}
                         >
                           <img src={flogo} style={{ width: "35px" }} />
@@ -521,9 +522,11 @@ export default function Defiswap() {
               </div>
             </div>
           </div>
-        </div>
         <div >
-          <div justify="center">
+          <div style={{
+            marginTop:"50px",
+            marginBottom:"20px"
+            }}>
             <Card
               isPressable
               css={{ backgroundColor: "#39FF14" }}
@@ -544,6 +547,7 @@ export default function Defiswap() {
               </Text>
             </Card>
           </div>
+        </div>
         </div>
         <Row justify="center">
           <Grid sm={4}>
