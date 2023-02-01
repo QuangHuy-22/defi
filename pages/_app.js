@@ -11,7 +11,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <NextUIProvider  theme={darkTheme}>
       {/* <Component {...pageProps} /> */}
-      <Defiswap  />
+      <Defiswap />
     </NextUIProvider>
   );
 }

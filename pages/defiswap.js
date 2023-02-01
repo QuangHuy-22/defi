@@ -290,43 +290,35 @@ export default function Defiswap() {
           </div>
         </div>
         <Row justify="center">
-          <Grid sm={4}>
-            <Card variant="bordered">
-              <Card.Header>
-                <Row>
-                  <Col>
-                    <img src="n2dex2-base.png" width={"80%"} />
-                  </Col>
-                  <Col>
-                    <Avatar
-                      src="profile.jpg"
-                      css={{ size: "$20" }}
-                      zoomed
-                      bordered
-                      color="gradient"
-                    />
-                  </Col>
-                  <img src="0xpicw.png" width={"80%"} />
-                </Row>
-              </Card.Header>
-              <Text
-                h3={true}
-                color="white"
-                css={{
-                  textShadow: "0px 0px 1px #000000",
-                  display: "flex",
-                  justifyContent: "center",
-                  textRendering: "geometricPrecision",
-                  fontFamily: "SF Pro Display",
-                  fontWeight: "$bold",
-                  m: "$0",
-                }}
-              >
-                Token Swap
-              </Text>
-            </Card>
-          </Grid>
+          <Text
+            h3={true}
+            color="white"
+            css={{
+              justifyContent: "center",
+              textRendering: "geometricPrecision",
+              fontFamily: "SF Pro Display",
+              fontWeight: "$bold",
+              m: "$0",
+              fontSize: "50px",
+              display: "block",
+            }}
+          >
+            Token Swap
+          </Text>
         </Row>
+        <div
+          style={{
+            marginBottom: "20px",
+            justifyContent: "center",
+            display: "flex",
+            textRendering: "geometricPrecision",
+            fontFamily: "SF Pro Display",
+            fontWeight: "$bold",
+            textShadow: "0px 0px 1px #000000",
+          }}
+        >
+          <span>Exchange token in seconds</span>
+        </div>
         <Modal
           scroll
           closeButton
@@ -347,19 +339,23 @@ export default function Defiswap() {
           </Modal.Footer>
         </Modal>
         <div className="module">
-          <div style={{ marginBottom: "15px", fontSize:"30px" }}>
-            From Token
+          <div
+            style={{
+              marginBottom: "15px",
+              fontSize: "30px",
+              textRendering: "geometricPrecision",
+              fontFamily: "SF Pro Display",
+              fontWeight: "$bold",
+              textShadow: "0px 0px 1px #000000",
+            }}
+          >
+            Exchange
           </div>
           <div>
             <div>
               <div justify="center">
                 <div className="aroundGrid">
-                  <div
-                    style={{
-                      width: "100%",
-                      display: "flex",
-                    }}
-                  >
+                  <div>
                     <div>
                       <Card
                         variant="bordered"
@@ -390,7 +386,11 @@ export default function Defiswap() {
                         </div>
                       </Card>
                     </div>
-                    <div>
+                    <div style={{
+                          position: "absolute",
+                          right: "15px",
+                          top: "3px"
+                    }}>
                       <a onClick={fromHandler}>
                         <Text
                           size="$3xl"
@@ -401,96 +401,102 @@ export default function Defiswap() {
                             color: "white",
                             ml: "$10",
                             fontSize: "20px",
+                            background: "#363636",
+                            paddingRight: "5px",
+                            borderRadius: "30px",
+                            padding:"3px 7px 0px 3px"
                           }}
                         >
                           <img src={flogo} style={{ width: "35px" }} />
                           {" " + fname}
                         </Text>
                       </a>
-                      <Row justify="center">
-                        <Text css={{ marginLeft: "$3", fontSize: "$lg" }}>
-                          Balance:
-                        </Text>
-                        <Text
-                          css={{
-                            marginLeft: "$3",
-                            fontSize: "$lg",
-                            fontFamily: "SF Pro Display",
-                            color: "$blue600",
-                          }}
-                          id="get_balance"
-                        ></Text>
-                      </Row>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <Modal
-        scroll
-        closeButton
-        blur
-        aria-labelledby="token_modal"
-        onClose={closeHandler}
-        open={visible}
-      >
-        <Modal.Body>
-          <Input
-            type="text"
-            size="$3xl"
-            css={{ fontFamily: "SF Pro Display", color: "white" }}
-            className="number"
-            color="default"
-            placeholder="Paste Token Address"
-          />
-          <Text size={16}>Or Choose Below:</Text>
-          <div id="token_list"></div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button auto flat color="error" onClick={closeHandler}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      <Row justify="center">
-        <img src="arrow.png" width={"2%"} />
-      </Row>
+              scroll
+              closeButton
+              blur
+              aria-labelledby="token_modal"
+              onClose={closeHandler}
+              open={visible}
+            >
+              <Modal.Body>
+                <Input
+                  type="text"
+                  size="$3xl"
+                  css={{ fontFamily: "SF Pro Display", color: "white" }}
+                  className="number"
+                  color="default"
+                  placeholder="Paste Token Address"
+                />
+                <Text size={16}>Or Choose Below:</Text>
+                <div id="token_list"></div>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button auto flat color="error" onClick={closeHandler}>
+                  Close
+                </Button>
+              </Modal.Footer>
+            </Modal>
+            <div>
+              <Row>
+                <Text css={{ marginLeft: "$3", fontSize: "$lg" }}>
+                  Balance:
+                </Text>
+                <Text
+                  css={{
+                    marginLeft: "$3",
+                    fontSize: "$lg",
+                    fontFamily: "SF Pro Display",
+                    color: "$blue600",
+                  }}
+                  id="get_balance"
+                ></Text>
+              </Row>
+            </div>
+            <Row justify="center">
+              <img src="arrow.png" width={"2%"} />
+            </Row>
             <div className="22222">
               <div justify="center">
-                <div className="aroundSwapTo" style={{display:"flex"}}>
+                <div className="aroundSwapTo" style={{ display: "flex" }}>
                   <div>
-                  <Card
-                    variant="bordered"
-                    style={{
-                      height: "50px",
-                      width: "386px"
-                }}
-                    css={{
-                      color: "white",
-                      opacity: "80%",
-                      fontFamily: "SF Pro Display",
-                      fontWeight: "300",
-                      fontSize: "30px",
-                      textShadow: "0px 0px 2px #000000",
-                      boxShadow: "0px 0px 4px #39FF14",
-                    }}
-                  >
-                    <Col>
-                      <Text
-                        type="text"
-                        size="$4xl"
-                        css={{
-                          fontFamily: "SF Pro Display",
-                          color: "white",
-                          textShadow: "0px 0px 3px #39FF14",
-                          ml: "$2",
-                        }}
-                        className="number"
-                        color="default"
-                        id="to_amount"
-                      />
-                    </Col>
-                  </Card>
+                    <Card
+                      variant="bordered"
+                      style={{
+                        height: "50px",
+                        width: "386px",
+                      }}
+                      css={{
+                        color: "white",
+                        opacity: "80%",
+                        fontFamily: "SF Pro Display",
+                        fontWeight: "300",
+                        fontSize: "30px",
+                        textShadow: "0px 0px 2px #000000",
+                        boxShadow: "0px 0px 4px #39FF14",
+                      }}
+                    >
+                      <Col>
+                        <Text
+                          type="text"
+                          size="$4xl"
+                          css={{
+                            fontFamily: "SF Pro Display",
+                            color: "white",
+                            textShadow: "0px 0px 3px #39FF14",
+                            ml: "$2",
+                          }}
+                          className="number"
+                          color="default"
+                          id="to_amount"
+                        />
+                      </Col>
+                    </Card>
                   </div>
                   <Spacer />
                   <div className="buttonSwapTo">
@@ -503,7 +509,7 @@ export default function Defiswap() {
                           fontWeight: "400",
                           color: "white",
                           ml: "$10",
-                          fontSize:"20px"
+                          fontSize: "20px",
                         }}
                       >
                         <img src={tlogo} style={{ width: "30px" }} />
@@ -516,8 +522,8 @@ export default function Defiswap() {
             </div>
           </div>
         </div>
-        <Grid sm={4}>
-          <Row justify="center">
+        <div >
+          <div justify="center">
             <Card
               isPressable
               css={{ backgroundColor: "#39FF14" }}
@@ -537,8 +543,8 @@ export default function Defiswap() {
                 SWAP !
               </Text>
             </Card>
-          </Row>
-        </Grid>
+          </div>
+        </div>
         <Row justify="center">
           <Grid sm={4}>
             <Row>

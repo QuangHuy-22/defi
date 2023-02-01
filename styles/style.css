@@ -2,7 +2,7 @@
   padding-top: 5%;
   padding-bottom: 20%;
   height: 100vh;
-  background-image: linear-gradient(to right, #421e64, rgb(128, 0, 64));
+  background-image: linear-gradient(to right, #421e64, rgb(15, 5, 24));
   display: block;
   /* justify-content: center; */
 }
@@ -26,8 +26,11 @@
   border-image: linear-gradient(to right, darkblue, darkorchid) 1;
   border-radius: inherit;
   margin: 0 auto;
-  max-width: 665px;
+  max-width: 530px;
   padding: 15px;
-  border-radius: 50%;
+  background-color: rgb(47, 33, 59);
+}
+.aroundGrid{
+  position: relative;
 }
 
