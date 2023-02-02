@@ -359,7 +359,7 @@ export default function Defiswap() {
             <input class="radio" id="tab2" name="groups" type="radio" />
           <div className="tabs tablist" style={{display:"flex"}}>
           <label id="support" for="tab1" className="swap">Swap</label>
-          <label id="hotline" for="tab2" className="pools">Pools</label>
+          <label id="hotline" for="tab2" className="pools">Liquidity</label>
           </div>
           <div class="panels">
             <div class="panel" id="one-supp">
@@ -643,7 +643,7 @@ export default function Defiswap() {
             <div class="panel" id="two-supp">
                 <div class="box-cskh bgfff pad16 row mb-8">
 
-                    <h3 class="title">CSKH theo khu vực</h3>
+                    <h3 class="title">Pending ...</h3>
 
                 </div>
             </div>
