@@ -1,5 +1,5 @@
 .container {
-  padding-top: 5%;
+  padding-top: 2%;
   padding-bottom: 20%;
   height: 100vh;
   background-image: linear-gradient(to right, #421e64, rgb(15, 5, 24));
@@ -18,24 +18,183 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 100px;
+  margin-bottom: 60px;
 }
 .module {
-  border-width: 4px;
-  border-style: solid;
-  border-image: linear-gradient(to right, darkblue, darkorchid) 1;
-  border-radius: inherit;
   margin: 0 auto;
   max-width: 570px;
   padding: 15px;
   background-color: rgb(47, 33, 59);
 }
-.aroundGrid{
+
+.headshot {
+  flex-shrink: 0;
+  border: calc(2px + 0.2vw) solid transparent;
+  background-origin: border-box;
+  background-size: cover;
+  box-sizing: border-box;
+  box-shadow: 0 0 5px 5px #80282880;
+  border-radius: 2%;
+}
+
+.headshot-1 {
+  background-image: var(--img-url);
+  box-shadow: 0 0 5px 5px rgba(128, 40, 40, 0.5);
+}
+
+.aroundGrid {
   position: relative;
 }
 
 input::placeholder {
   font-weight: bold;
   opacity: 0.5;
-  font-family: "SF Pro Display",
+  font-family: "SF Pro Display";
 }
+.buttonSwapTo {
+  position: absolute;
+  right: 8px;
+  top: 2px;
+}
+
+.btn-grad {
+  background-image: linear-gradient(
+    to right,
+    #dc2424 0%,
+    #4a569d 51%,
+    #dc2424 100%
+  );
+  margin: 10px;
+  /* padding: 15px 45px; */
+  text-align: center;
+  text-transform: uppercase;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: white;
+  box-shadow: 0 0 5px #eee;
+  border-radius: 10px;
+}
+
+.btn-grad:hover {
+  background-position: right center; /* change the direction of the change here */
+  color: #fff;
+  text-decoration: none;
+}
+
+.btn-connect {
+  background-image: linear-gradient(
+    to right,
+    #dc2424 0%,
+    #4a569d 51%,
+    #dc2424 100%
+  );
+  margin: 10px;
+  padding: 15px 45px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: white;
+  box-shadow: 0 0 5px #eee;
+  border-radius: 10px;
+}
+
+.btn-connect:hover {
+  background-position: right center; /* change the direction of the change here */
+  color: #fff;
+  text-decoration: none;
+}
+.swap {
+  padding: 0px 55px;
+  font-family: SF Pro Display;
+  font-size: 25px;
+}
+.pools {
+  font-family: SF Pro Display;
+  font-size: 25px;
+}
+
+/* .radio {
+  display: none;
+}
+#tab1:checked ~ .panels #one-supp,
+#tab2:checked ~ .panels #two-supp {
+  display: block;
+}
+#tab1:checked ~ .tabs #support,
+#tab2:checked ~ .tabs #hotline {
+  background: #cf3a3e;
+  border-radius: 16px;
+  color: #fff;
+  font-weight: 500;
+}
+
+.tabs {
+  background: #F4F4F4;
+  border-radius: 20px;
+  width: 100%;
+  margin-bottom: 17px;
+  display: grid;
+  grid-template-columns: 33.4% 33.4% 33.4%;
+  padding: 5px;
+}
+#one:checked~.tabs #one-tab,
+    #two:checked~.tabs #two-tab,
+    #three:checked~.tabs #three-tab {
+        background: #CF3A3E;
+        border-radius: 16px;
+        color: #fff;
+        font-weight: 500;
+    }
+
+    #tab1:checked~.tabs #support,
+    #tab2:checked~.tabs #hotline {
+        background: #CF3A3E;
+        border-radius: 16px;
+        color: #fff;
+        font-weight: 500;
+    }
+
+    .tablist {
+      background: #fff;
+      grid-template-columns: 50% 50%;
+  }
+
+  #one:checked~.tabs #one-tab,
+    #two:checked~.tabs #two-tab,
+    #three:checked~.tabs #three-tab {
+        background: #CF3A3E;
+        border-radius: 16px;
+        color: #fff;
+        font-weight: 500;
+    }
+    .tab {
+      cursor: pointer;
+      padding: 8px 0;
+      display: inline-block;
+      color: #808890;
+      text-align: center;
+  }
+  .panels {
+    width: 100%;
+}
+#tab1:checked~.panels #one-supp,
+    #tab2:checked~.panels #two-supp {
+        display: block
+    }
+
+    .panel {
+      display: none;
+      animation: fadein .8s;
+  }
+
+  #one:checked~.panels #one-panel,
+    #two:checked~.panels #two-panel,
+    #three:checked~.panels #three-panel {
+        display: block
+    }
+
+    #tab1:checked~.panels #one-supp,
+    #tab2:checked~.panels #two-supp {
+        display: block
+    } */

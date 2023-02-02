@@ -19,6 +19,7 @@ import qs from "qs";
 import Erc20 from "../engine/erc20.json";
 import { ethers } from "ethers";
 import { Alchemy, Network } from "alchemy-sdk";
+import truncateEthAddress from 'truncate-eth-address'
 
 export default function Defiswap() {
   const { visible, setVisible } = useModal();
@@ -93,13 +94,13 @@ export default function Defiswap() {
     await connection.send("eth_requestAccounts");
     var accounts = await web3.eth.getAccounts();
     account = accounts[0];
-    document.getElementById("wallet-address").textContent = account;
     if (account !== null) {
-      document.getElementById("status").textContent = "CONNECTED!";
+      document.getElementById("status").textContent = truncateEthAddress(account);
     } else {
       document.getElementById("status").textContent = "CONNECT";
     }
     getWallet(account);
+    closeHandler()
   }
 
   async function listFromTokens() {
@@ -149,7 +150,7 @@ export default function Defiswap() {
         item.tokenBalance ===
         "0x0000000000000000000000000000000000000000000000000000000000000000"
       ) {
-        document.getElementById("get_balance").innerHTML = "0.00";
+        document.getElementById("get_balance").innerHTML = "0.000006";
       } else {
         document.getElementById("get_balance").innerHTML = balance;
       }
@@ -269,13 +270,40 @@ export default function Defiswap() {
     <div gap={1} className="container">
       <div className="tuyem">
         <div className="aroundBotton">
-          <div>Huy123</div>
+          <div style={{
+            display: "flex",
+            alignItems:"center"
+            }}
+            
+            >
+          <img src="logo.png" width={"20%"} />
+            {/* <input class="radio" id="tab1" name="groups" type="radio" checked />
+            <input class="radio" id="tab2" name="groups" type="radio" /> */}
+          <div className="tabs tablist" style={{display:"flex"}}>
+          <label id="support" for="tab1" className="swap">Swap</label>
+          <label id="hotline" for="tab2" className="pools">Pools</label>
+          </div>
+          {/* <div class="panels">
+                    <div class="panel" id="one-supp">
+                        <div class="mb-16 bgfff pad16 row">
+                            <h3 class="title">Hỗ trợ trực tuyến</h3>
+                        </div>
+                    </div>
+                    <div class="panel" id="two-supp">
+                        <div class="box-cskh bgfff pad16 row mb-8">
+
+                            <h3 class="title">CSKH theo khu vực</h3>
+
+                        </div>
+                    </div>
+                </div> */}
+          </div>
           <div className="buttonConnect">
             <Button
               rounded
               color="primary"
               onPress={connect}
-              css={{ boxShadow: "0px 0px 4px #000000" }}
+              className="btn-connect"
             >
               <Text
                 css={{ color: "white" }}
@@ -338,7 +366,7 @@ export default function Defiswap() {
             </Button>
           </Modal.Footer>
         </Modal>
-        <div className="module">
+        <div className="module headshot glow">
           <div
             style={{
               marginBottom: "15px",
@@ -366,7 +394,8 @@ export default function Defiswap() {
                           fontWeight: "300",
                           fontSize: "30px",
                           textShadow: "0px 0px 2px #000000",
-                          boxShadow: "0px 0px 4px #39FF14",
+                          boxShadow: "0px 0px 4px #80282880",
+                          height:"60px"
                         }}
                       >
                         <div>
@@ -386,11 +415,13 @@ export default function Defiswap() {
                         </div>
                       </Card>
                     </div>
-                    <div style={{
-                          position: "absolute",
-                          right: "7px",
-                          top: "3px"
-                    }}>
+                    <div
+                      style={{
+                        position: "absolute",
+                        right: "7px",
+                        top: "3px",
+                      }}
+                    >
                       <a onClick={fromHandler}>
                         <Text
                           size="$3xl"
@@ -400,16 +431,19 @@ export default function Defiswap() {
                             fontWeight: "400",
                             color: "white",
                             ml: "$10",
-                            fontSize: "15px",
+                            fontSize: "17px",
                             background: "#363636",
                             paddingRight: "5px",
                             borderRadius: "30px",
-                            padding: "1px 10px 0px 10px",
-                            marginTop: "6px"
+                            padding: "6px 10px 0px 10px",
+                            marginTop: "6px",
+                            height: "45px"
                           }}
-                        >
-                          <img src={flogo} style={{ width: "35px" }} />
+                        > 
+                          <img src={flogo} style={{ width: "20px" }} />
+                          <span style={{fontSize:"20px"}}>
                           {" " + fname}
+                          </span>
                         </Text>
                       </a>
                     </div>
@@ -445,7 +479,13 @@ export default function Defiswap() {
             </Modal>
             <div>
               <Row>
-                <Text css={{ marginLeft: "$3", fontSize: "$lg" }}>
+                <Text
+                  css={{
+                    marginLeft: "$3",
+                    fontSize: "$lg",
+                    fontFamily: "SF Pro Display",
+                  }}
+                >
                   Balance:
                 </Text>
                 <Text
@@ -460,17 +500,23 @@ export default function Defiswap() {
               </Row>
             </div>
             <Row justify="center">
-              <img src="arrow.png" width={"2%"} />
+              <img src="arrow.png" width={"3%"} />
             </Row>
             <div className="22222">
               <div justify="center">
-                <div className="aroundSwapTo" style={{ display: "flex" }}>
+                <div
+                  className="aroundSwapTo"
+                  style={{
+                    display: "flex",
+                    position: "relative",
+                  }}
+                >
                   <div>
                     <Card
                       variant="bordered"
                       style={{
-                        height: "50px",
-                        width: "386px",
+                        height: "58px",
+                        width: "532px",
                       }}
                       css={{
                         color: "white",
@@ -479,7 +525,8 @@ export default function Defiswap() {
                         fontWeight: "300",
                         fontSize: "30px",
                         textShadow: "0px 0px 2px #000000",
-                        boxShadow: "0px 0px 4px #39FF14",
+                        boxShadow: "0px 0px 4px #80282880",
+                        height: "60px"
                       }}
                     >
                       <Col>
@@ -510,11 +557,19 @@ export default function Defiswap() {
                           fontWeight: "400",
                           color: "white",
                           ml: "$10",
-                          fontSize: "20px",
+                          fontSize: "15px",
+                          background: "#363636",
+                          paddingRight: "5px",
+                          borderRadius: "30px",
+                          padding: "4px 18px 0px 18px",
+                          marginTop: "5px",
+                          height: "45px"
                         }}
                       >
-                        <img src={tlogo} style={{ width: "30px" }} />
+                        <img src={tlogo} style={{ width: "20px" }} />
+                        <span style={{fontSize:"20px"}}>
                         {" " + tname}
+                        </span>
                       </Text>
                     </a>
                   </div>
@@ -522,35 +577,15 @@ export default function Defiswap() {
               </div>
             </div>
           </div>
-        <div >
+          <div>
+        <div style={{
+          marginTop:"20px"
+        }}>
           <div style={{
-            marginTop:"50px",
-            marginBottom:"20px"
-            }}>
-            <Card
-              isPressable
-              css={{ backgroundColor: "#39FF14" }}
-              onPress={swapit}
-            >
-              <Text
-                css={{
-                  display: "flex",
-                  justifyContent: "center",
-                  color: "black",
-                  textShadow: "0px 0px 2px #000000",
-                }}
-                size="$3xl"
-                weight="bold"
-                transform="uppercase"
-              >
-                SWAP !
-              </Text>
-            </Card>
-          </div>
-        </div>
-        </div>
-        <Row justify="center">
-          <Grid sm={4}>
+            display: "flex",
+            justifyContent: "space-around"
+          }}>
+            <div>
             <Row>
               <Text size={20} css={{ marginLeft: "$5", color: "white" }}>
                 Gas Estimate:{" "}
@@ -567,6 +602,8 @@ export default function Defiswap() {
                 id="gas_estimate"
               ></p>
             </Row>
+            </div>
+            <div>
             <Row>
               <Text size={24} css={{ marginLeft: "$5", color: "white" }}>
                 LP Provider:{" "}
@@ -574,7 +611,7 @@ export default function Defiswap() {
               <p
                 style={{
                   fontFamily: "SF Pro Display",
-                  fontSize: "25px",
+                  fontSize: "24px",
                   marginLeft: "4px",
                   color: "#39FF14",
                   fontWeight: "bold",
@@ -583,38 +620,40 @@ export default function Defiswap() {
                 id="defisource"
               ></p>
             </Row>
-          </Grid>
-        </Row>
-        <Row justify="center">
-          <Grid sm={4}>
-            <Row justify="center">
+            </div>
+          </div>
+        </div>
+            <div
+              style={{
+                marginTop: "50px",
+                marginBottom: "20px",
+              }}
+            >
               <Card
-                css={{
-                  borderTop:
-                    "$borderWeights$light solid rgba(255, 255, 255, 0.2)",
+                isPressable
+                className="btn-grad"
+                onPress={swapit}
+                style={{
+                  margin: "0 auto",
+                  maxWidth: "165px"
                 }}
               >
-                <Row justify="center" css={{ mt: "$2" }}>
-                  <Text color="#fff" size={10}>
-                    Secured with
-                  </Text>
-                  <img src="alchemy-white.png" width={"30%"} />
-                </Row>
-                <Row justify="center" css={{ mt: "$2" }}>
-                  <Text
-                    size={20}
-                    id="wallet-address"
-                    css={{
-                      color: "#39FF14",
-                      textShadow: "0px 0px 3px #000000",
-                      marginRight: "$2",
-                    }}
-                  />
-                </Row>
+                <Text
+                  css={{
+                    display: "flex",
+                    justifyContent: "center",
+                    textShadow: "0px 0px 2px #000000",
+                  }}
+                  size="$3xl"
+                  weight="bold"
+                  transform="uppercase"
+                >
+                  SWAP !
+                </Text>
               </Card>
-            </Row>
-          </Grid>
-        </Row>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
