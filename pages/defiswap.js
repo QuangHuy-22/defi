@@ -150,7 +150,7 @@ export default function Defiswap() {
         item.tokenBalance ===
         "0x0000000000000000000000000000000000000000000000000000000000000000"
       ) {
-        document.getElementById("get_balance").innerHTML = "0.000006";
+        document.getElementById("get_balance").innerHTML = "0.00";
       } else {
         document.getElementById("get_balance").innerHTML = balance;
       }
@@ -276,27 +276,8 @@ export default function Defiswap() {
             }}
             
             >
-          <img src="logo.png" width={"20%"} />
-            {/* <input class="radio" id="tab1" name="groups" type="radio" checked />
-            <input class="radio" id="tab2" name="groups" type="radio" /> */}
-          <div className="tabs tablist" style={{display:"flex"}}>
-          <label id="support" for="tab1" className="swap">Swap</label>
-          <label id="hotline" for="tab2" className="pools">Pools</label>
-          </div>
-          {/* <div class="panels">
-                    <div class="panel" id="one-supp">
-                        <div class="mb-16 bgfff pad16 row">
-                            <h3 class="title">Hỗ trợ trực tuyến</h3>
-                        </div>
-                    </div>
-                    <div class="panel" id="two-supp">
-                        <div class="box-cskh bgfff pad16 row mb-8">
-
-                            <h3 class="title">CSKH theo khu vực</h3>
-
-                        </div>
-                    </div>
-                </div> */}
+          <img src="logo.png" width={"50%"} />
+            
           </div>
           <div className="buttonConnect">
             <Button
@@ -331,7 +312,7 @@ export default function Defiswap() {
               display: "block",
             }}
           >
-            Token Swap
+            HotPot Swap
           </Text>
         </Row>
         <div
@@ -367,18 +348,22 @@ export default function Defiswap() {
           </Modal.Footer>
         </Modal>
         <div className="module headshot glow">
-          <div
-            style={{
+          <div style={{
               marginBottom: "15px",
               fontSize: "30px",
               textRendering: "geometricPrecision",
               fontFamily: "SF Pro Display",
-              fontWeight: "$bold",
               textShadow: "0px 0px 1px #000000",
-            }}
-          >
-            Exchange
+            }}>
+          <input class="radio" id="tab1" name="groups" type="radio" checked />
+            <input class="radio" id="tab2" name="groups" type="radio" />
+          <div className="tabs tablist" style={{display:"flex"}}>
+          <label id="support" for="tab1" className="swap">Swap</label>
+          <label id="hotline" for="tab2" className="pools">Pools</label>
           </div>
+          <div class="panels">
+            <div class="panel" id="one-supp">
+            <div>
           <div>
             <div>
               <div justify="center">
@@ -493,7 +478,7 @@ export default function Defiswap() {
                     marginLeft: "$3",
                     fontSize: "$lg",
                     fontFamily: "SF Pro Display",
-                    color: "$blue600",
+                    color: "#39FF14",
                   }}
                   id="get_balance"
                 ></Text>
@@ -653,6 +638,18 @@ export default function Defiswap() {
               </Card>
             </div>
           </div>
+          </div>
+            </div>
+            <div class="panel" id="two-supp">
+                <div class="box-cskh bgfff pad16 row mb-8">
+
+                    <h3 class="title">CSKH theo khu vực</h3>
+
+                </div>
+            </div>
+        </div>
+        </div>
+        
         </div>
       </div>
     </div>
