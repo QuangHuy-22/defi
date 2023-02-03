@@ -19,7 +19,7 @@ import qs from "qs";
 import Erc20 from "../engine/erc20.json";
 import { ethers } from "ethers";
 import { Alchemy, Network } from "alchemy-sdk";
-import truncateEthAddress from 'truncate-eth-address'
+import truncateEthAddress from "truncate-eth-address";
 
 export default function Defiswap() {
   const { visible, setVisible } = useModal();
@@ -34,6 +34,7 @@ export default function Defiswap() {
   const [holdup, setHold] = useState("");
   const [wallet, getWallet] = useState([]);
   const [alert, setAlert] = useState(false);
+  const [swap, setSwap] = useState(false);
 
   const config = {
     apiKey: "6vk4ND2nxNThz8mY_RnIjbaiq7TeETMJ",
@@ -85,6 +86,7 @@ export default function Defiswap() {
   const closeHandler = () => {
     setVisible(false);
     setAlert(false);
+    setSwap(false);
     console.log("closed");
   };
   async function connect() {
@@ -95,12 +97,19 @@ export default function Defiswap() {
     var accounts = await web3.eth.getAccounts();
     account = accounts[0];
     if (account !== null) {
-      document.getElementById("status").textContent = truncateEthAddress(account);
+      document.getElementById("status").textContent =
+        truncateEthAddress(account);
     } else {
       document.getElementById("status").textContent = "CONNECT";
     }
     getWallet(account);
-    closeHandler()
+    closeHandler();
+  }
+  async function onDisconnect() {
+    document.getElementById("status").textContent = "CONNECT";
+  }
+  async function swapToken(){
+    setSwap(true);
   }
 
   async function listFromTokens() {
@@ -270,14 +279,13 @@ export default function Defiswap() {
     <div gap={1} className="container">
       <div className="tuyem">
         <div className="aroundBotton">
-          <div style={{
-            display: "flex",
-            alignItems:"center"
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
             }}
-            
-            >
-          <img src="logo.png" width={"50%"} />
-            
+          >
+            <img src="logo.png" width={"50%"} />
           </div>
           <div className="buttonConnect">
             <Button
@@ -294,6 +302,42 @@ export default function Defiswap() {
                 id="status"
               >
                 CONNECT
+              </Text>
+            </Button>
+          </div>
+          <div className="buttonDisConnect">
+            <Button
+              rounded
+              color="primary"
+              onPress={onDisconnect}
+              className="btn-connect"
+            >
+              <Text
+                css={{ color: "white" }}
+                size={16}
+                weight="bold"
+                transform="uppercase"
+                id="status"
+              >
+                Dis Connect
+              </Text>
+            </Button>
+          </div>
+          <div className="buttonDisConnect">
+            <Button
+              rounded
+              color="primary"
+              onPress={swapToken}
+              className="btn-connect"
+            >
+              <Text
+                css={{ color: "white" }}
+                size={16}
+                weight="bold"
+                transform="uppercase"
+                id="status"
+              >
+                Swap it
               </Text>
             </Button>
           </div>
@@ -348,308 +392,438 @@ export default function Defiswap() {
           </Modal.Footer>
         </Modal>
         <div className="module headshot glow">
-          <div style={{
+          <div
+            style={{
               marginBottom: "15px",
               fontSize: "30px",
               textRendering: "geometricPrecision",
               fontFamily: "SF Pro Display",
               textShadow: "0px 0px 1px #000000",
-            }}>
-          <input class="radio" id="tab1" name="groups" type="radio" checked />
+            }}
+          >
+            <input class="radio" id="tab1" name="groups" type="radio" checked />
             <input class="radio" id="tab2" name="groups" type="radio" />
-          <div className="tabs tablist" style={{display:"flex"}}>
-          <label id="support" for="tab1" className="swap">Swap</label>
-          <label id="hotline" for="tab2" className="pools">Liquidity</label>
-          </div>
-          <div class="panels">
-            <div class="panel" id="one-supp">
-            <div>
-          <div>
-            <div>
-              <div justify="center">
-                <div className="aroundGrid">
+            <div className="tabs tablist" style={{ display: "flex" }}>
+              <label id="support" for="tab1" className="swap">
+                Swap
+              </label>
+              <label id="hotline" for="tab2" className="pools">
+                Liquidity
+              </label>
+            </div>
+            <div class="panels">
+              <div class="panel" id="one-supp">
+                <div>
                   <div>
                     <div>
-                      <Card
-                        variant="bordered"
-                        css={{
-                          color: "white",
-                          opacity: "80%",
-                          fontFamily: "SF Pro Display",
-                          fontWeight: "300",
-                          fontSize: "30px",
-                          textShadow: "0px 0px 2px #000000",
-                          boxShadow: "0px 0px 4px #80282880",
-                          height:"60px"
+                      <div justify="center">
+                        <div className="aroundGrid">
+                          <div>
+                            <div>
+                              <Card
+                                variant="bordered"
+                                css={{
+                                  color: "white",
+                                  opacity: "80%",
+                                  fontFamily: "SF Pro Display",
+                                  fontWeight: "300",
+                                  fontSize: "30px",
+                                  textShadow: "0px 0px 2px #000000",
+                                  boxShadow: "0px 0px 4px #80282880",
+                                  height: "60px",
+                                }}
+                              >
+                                <div>
+                                  <Input
+                                    type="text"
+                                    size="$3xl"
+                                    css={{
+                                      fontFamily: "SF Pro Display",
+                                      color: "white",
+                                    }}
+                                    className="number"
+                                    color="default"
+                                    placeholder="amount"
+                                    id="from_amount"
+                                    onChange={(e) => setHold(e.target.value)}
+                                  />
+                                </div>
+                              </Card>
+                            </div>
+                            <div
+                              style={{
+                                position: "absolute",
+                                right: "7px",
+                                top: "3px",
+                              }}
+                            >
+                              <a onClick={fromHandler}>
+                                <Text
+                                  size="$3xl"
+                                  css={{
+                                    fontFamily: "SF Pro Display",
+                                    textShadow: "0px 0px 1px #000000",
+                                    fontWeight: "400",
+                                    color: "white",
+                                    ml: "$10",
+                                    fontSize: "17px",
+                                    background: "#363636",
+                                    paddingRight: "5px",
+                                    borderRadius: "30px",
+                                    padding: "6px 10px 0px 10px",
+                                    marginTop: "6px",
+                                    height: "45px",
+                                  }}
+                                >
+                                  <img src={flogo} style={{ width: "20px" }} />
+                                  <span style={{ fontSize: "20px" }}>
+                                    {" " + fname}
+                                  </span>
+                                </Text>
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <Modal
+                      scroll
+                      closeButton
+                      blur
+                      aria-labelledby="token_modal"
+                      onClose={closeHandler}
+                      open={visible}
+                    >
+                      <Modal.Body>
+                        <Input
+                          type="text"
+                          size="$3xl"
+                          css={{ fontFamily: "SF Pro Display", color: "white" }}
+                          className="number"
+                          color="default"
+                          placeholder="Paste Token Address"
+                        />
+                        <Text size={16}>Or Choose Below:</Text>
+                        <div id="token_list"></div>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button auto flat color="error" onClick={closeHandler}>
+                          Close
+                        </Button>
+                      </Modal.Footer>
+                    </Modal>
+                    <div>
+                      <Row>
+                        <Text
+                          css={{
+                            marginLeft: "$3",
+                            fontSize: "$lg",
+                            fontFamily: "SF Pro Display",
+                          }}
+                        >
+                          Balance:
+                        </Text>
+                        <Text
+                          css={{
+                            marginLeft: "$3",
+                            fontSize: "$lg",
+                            fontFamily: "SF Pro Display",
+                            color: "#39FF14",
+                          }}
+                          id="get_balance"
+                        ></Text>
+                      </Row>
+                    </div>
+                    <Row justify="center">
+                      <img src="arrow.png" width={"3%"} />
+                    </Row>
+                    <div className="22222">
+                      <div justify="center">
+                        <div
+                          className="aroundSwapTo"
+                          style={{
+                            display: "flex",
+                            position: "relative",
+                          }}
+                        >
+                          <div>
+                            <Card
+                              variant="bordered"
+                              style={{
+                                height: "58px",
+                                width: "532px",
+                              }}
+                              css={{
+                                color: "white",
+                                opacity: "80%",
+                                fontFamily: "SF Pro Display",
+                                fontWeight: "300",
+                                fontSize: "30px",
+                                textShadow: "0px 0px 2px #000000",
+                                boxShadow: "0px 0px 4px #80282880",
+                                height: "60px",
+                              }}
+                            >
+                              <Col>
+                                <Text
+                                  type="text"
+                                  size="$4xl"
+                                  css={{
+                                    fontFamily: "SF Pro Display",
+                                    color: "white",
+                                    textShadow: "0px 0px 3px #39FF14",
+                                    ml: "$2",
+                                  }}
+                                  className="number"
+                                  color="default"
+                                  id="to_amount"
+                                />
+                              </Col>
+                            </Card>
+                          </div>
+                          <Spacer />
+                          <div className="buttonSwapTo">
+                            <a onClick={toHandler}>
+                              <Text
+                                size="$3xl"
+                                css={{
+                                  fontFamily: "SF Pro Display",
+                                  textShadow: "0px 0px 1px #000000",
+                                  fontWeight: "400",
+                                  color: "white",
+                                  ml: "$10",
+                                  fontSize: "15px",
+                                  background: "#363636",
+                                  paddingRight: "5px",
+                                  borderRadius: "30px",
+                                  padding: "4px 18px 0px 18px",
+                                  marginTop: "5px",
+                                  height: "45px",
+                                }}
+                              >
+                                <img src={tlogo} style={{ width: "20px" }} />
+                                <span style={{ fontSize: "20px" }}>
+                                  {" " + tname}
+                                </span>
+                              </Text>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div
+                      style={{
+                        marginTop: "20px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-around",
                         }}
                       >
                         <div>
-                          <Input
-                            type="text"
-                            size="$3xl"
-                            css={{
-                              fontFamily: "SF Pro Display",
-                              color: "white",
-                            }}
-                            className="number"
-                            color="default"
-                            placeholder="amount"
-                            id="from_amount"
-                            onChange={(e) => setHold(e.target.value)}
-                          />
+                          <Row>
+                            <Text
+                              size={20}
+                              css={{ marginLeft: "$5", color: "white" }}
+                            >
+                              Gas Estimate:{" "}
+                            </Text>
+                            <p
+                              style={{
+                                fontFamily: "SF Pro Display",
+                                fontSize: "24px",
+                                marginLeft: "4px",
+                                color: "#39FF14",
+                                fontWeight: "bold",
+                                textShadow: "0px 0px 1px #000000",
+                              }}
+                              id="gas_estimate"
+                            ></p>
+                          </Row>
                         </div>
-                      </Card>
+                        <div>
+                          <Row>
+                            <Text
+                              size={24}
+                              css={{ marginLeft: "$5", color: "white" }}
+                            >
+                              LP Provider:{" "}
+                            </Text>
+                            <p
+                              style={{
+                                fontFamily: "SF Pro Display",
+                                fontSize: "24px",
+                                marginLeft: "4px",
+                                color: "#39FF14",
+                                fontWeight: "bold",
+                                textShadow: "0px 0px 1px #000000",
+                              }}
+                              id="defisource"
+                            ></p>
+                          </Row>
+                        </div>
+                      </div>
                     </div>
                     <div
                       style={{
-                        position: "absolute",
-                        right: "7px",
-                        top: "3px",
+                        marginTop: "50px",
+                        marginBottom: "20px",
                       }}
                     >
-                      <a onClick={fromHandler}>
+                      <Card
+                        isPressable
+                        className="btn-grad"
+                        onPress={swapit}
+                        style={{
+                          margin: "0 auto",
+                          maxWidth: "165px",
+                        }}
+                      >
                         <Text
-                          size="$3xl"
                           css={{
-                            fontFamily: "SF Pro Display",
-                            textShadow: "0px 0px 1px #000000",
-                            fontWeight: "400",
-                            color: "white",
-                            ml: "$10",
-                            fontSize: "17px",
-                            background: "#363636",
-                            paddingRight: "5px",
-                            borderRadius: "30px",
-                            padding: "6px 10px 0px 10px",
-                            marginTop: "6px",
-                            height: "45px"
+                            display: "flex",
+                            justifyContent: "center",
+                            textShadow: "0px 0px 2px #000000",
                           }}
-                        > 
-                          <img src={flogo} style={{ width: "20px" }} />
-                          <span style={{fontSize:"20px"}}>
-                          {" " + fname}
-                          </span>
+                          size="$3xl"
+                          weight="bold"
+                          transform="uppercase"
+                        >
+                          SWAP !
                         </Text>
-                      </a>
+                      </Card>
+                      <Modal
+                        scroll
+                        closeButton
+                        blur
+                        aria-labelledby="connect_modal"
+                        onClose={closeHandler}
+                        open={swap}
+                      >
+                        <Modal.Header>
+                        <div>
+                          <h3>
+                        Confirm Swap
+                          </h3>
+                        </div>
+                        </Modal.Header>
+                        <Modal.Body>
+                          <Text
+                                  size="$3xl"
+                                  css={{
+                                    fontFamily: "SF Pro Display",
+                                    textShadow: "0px 0px 1px #000000",
+                                    fontWeight: "400",
+                                    color: "white",
+                                    ml: "$10",
+                                    fontSize: "17px",
+                                    background: "#363636",
+                                    paddingRight: "5px",
+                                    borderRadius: "30px",
+                                    padding: "6px 10px 0px 10px",
+                                    marginTop: "6px",
+                                    height: "45px",
+                                  }}
+                                >
+                                  <img src={flogo} style={{ width: "20px" }} />
+                                  <span style={{ fontSize: "20px" }}>
+                                    {" " + fname}
+                                  </span>
+                                </Text>
+                                <Text
+                                size="$3xl"
+                                css={{
+                                  fontFamily: "SF Pro Display",
+                                  textShadow: "0px 0px 1px #000000",
+                                  fontWeight: "400",
+                                  color: "white",
+                                  ml: "$10",
+                                  fontSize: "15px",
+                                  background: "#363636",
+                                  paddingRight: "5px",
+                                  borderRadius: "30px",
+                                  padding: "4px 18px 0px 18px",
+                                  marginTop: "5px",
+                                  height: "45px",
+                                }}
+                              >
+                                <img src={tlogo} style={{ width: "20px" }} />
+                                <span style={{ fontSize: "20px" }}>
+                                  {" " + tname}
+                                </span>
+                              </Text>
+                              <div>
+                          <Row>
+                            <Text
+                              size={20}
+                              css={{ marginLeft: "$5", color: "white" }}
+                            >
+                              Gas Estimate:{" "}
+                            </Text>
+                            <p
+                              style={{
+                                fontFamily: "SF Pro Display",
+                                fontSize: "24px",
+                                marginLeft: "4px",
+                                color: "#39FF14",
+                                fontWeight: "bold",
+                                textShadow: "0px 0px 1px #000000",
+                              }}
+                              id="gas_estimate"
+                            ></p>
+                          </Row>
+                        </div>
+                              <div>
+                              <Row>
+                            <Text
+                              size={24}
+                              css={{ marginLeft: "$5", color: "white" }}
+                            >
+                              LP Provider:{" "}
+                            </Text>
+                            <p
+                              style={{
+                                fontFamily: "SF Pro Display",
+                                fontSize: "24px",
+                                marginLeft: "4px",
+                                color: "#39FF14",
+                                fontWeight: "bold",
+                                textShadow: "0px 0px 1px #000000",
+                              }}
+                              id="defisource"
+                            ></p>
+                          </Row>
+                          </div>
+                        </Modal.Body>
+                        <Modal.Footer>
+                          <Button auto flat color="primary" onClick={connect}>
+                            Connect Wallet
+                          </Button>
+                          <Button
+                            auto
+                            flat
+                            color="error"
+                            onClick={closeHandler}
+                          >
+                            Close
+                          </Button>
+                        </Modal.Footer>
+                      </Modal>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <Modal
-              scroll
-              closeButton
-              blur
-              aria-labelledby="token_modal"
-              onClose={closeHandler}
-              open={visible}
-            >
-              <Modal.Body>
-                <Input
-                  type="text"
-                  size="$3xl"
-                  css={{ fontFamily: "SF Pro Display", color: "white" }}
-                  className="number"
-                  color="default"
-                  placeholder="Paste Token Address"
-                />
-                <Text size={16}>Or Choose Below:</Text>
-                <div id="token_list"></div>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button auto flat color="error" onClick={closeHandler}>
-                  Close
-                </Button>
-              </Modal.Footer>
-            </Modal>
-            <div>
-              <Row>
-                <Text
-                  css={{
-                    marginLeft: "$3",
-                    fontSize: "$lg",
-                    fontFamily: "SF Pro Display",
-                  }}
-                >
-                  Balance:
-                </Text>
-                <Text
-                  css={{
-                    marginLeft: "$3",
-                    fontSize: "$lg",
-                    fontFamily: "SF Pro Display",
-                    color: "#39FF14",
-                  }}
-                  id="get_balance"
-                ></Text>
-              </Row>
-            </div>
-            <Row justify="center">
-              <img src="arrow.png" width={"3%"} />
-            </Row>
-            <div className="22222">
-              <div justify="center">
-                <div
-                  className="aroundSwapTo"
-                  style={{
-                    display: "flex",
-                    position: "relative",
-                  }}
-                >
-                  <div>
-                    <Card
-                      variant="bordered"
-                      style={{
-                        height: "58px",
-                        width: "532px",
-                      }}
-                      css={{
-                        color: "white",
-                        opacity: "80%",
-                        fontFamily: "SF Pro Display",
-                        fontWeight: "300",
-                        fontSize: "30px",
-                        textShadow: "0px 0px 2px #000000",
-                        boxShadow: "0px 0px 4px #80282880",
-                        height: "60px"
-                      }}
-                    >
-                      <Col>
-                        <Text
-                          type="text"
-                          size="$4xl"
-                          css={{
-                            fontFamily: "SF Pro Display",
-                            color: "white",
-                            textShadow: "0px 0px 3px #39FF14",
-                            ml: "$2",
-                          }}
-                          className="number"
-                          color="default"
-                          id="to_amount"
-                        />
-                      </Col>
-                    </Card>
-                  </div>
-                  <Spacer />
-                  <div className="buttonSwapTo">
-                    <a onClick={toHandler}>
-                      <Text
-                        size="$3xl"
-                        css={{
-                          fontFamily: "SF Pro Display",
-                          textShadow: "0px 0px 1px #000000",
-                          fontWeight: "400",
-                          color: "white",
-                          ml: "$10",
-                          fontSize: "15px",
-                          background: "#363636",
-                          paddingRight: "5px",
-                          borderRadius: "30px",
-                          padding: "4px 18px 0px 18px",
-                          marginTop: "5px",
-                          height: "45px"
-                        }}
-                      >
-                        <img src={tlogo} style={{ width: "20px" }} />
-                        <span style={{fontSize:"20px"}}>
-                        {" " + tname}
-                        </span>
-                      </Text>
-                    </a>
-                  </div>
+              <div class="panel" id="two-supp">
+                <div class="box-cskh bgfff pad16 row mb-8">
+                  <h3 class="title">Pending ...</h3>
                 </div>
               </div>
             </div>
           </div>
-          <div>
-        <div style={{
-          marginTop:"20px"
-        }}>
-          <div style={{
-            display: "flex",
-            justifyContent: "space-around"
-          }}>
-            <div>
-            <Row>
-              <Text size={20} css={{ marginLeft: "$5", color: "white" }}>
-                Gas Estimate:{" "}
-              </Text>
-              <p
-                style={{
-                  fontFamily: "SF Pro Display",
-                  fontSize: "24px",
-                  marginLeft: "4px",
-                  color: "#39FF14",
-                  fontWeight: "bold",
-                  textShadow: "0px 0px 1px #000000",
-                }}
-                id="gas_estimate"
-              ></p>
-            </Row>
-            </div>
-            <div>
-            <Row>
-              <Text size={24} css={{ marginLeft: "$5", color: "white" }}>
-                LP Provider:{" "}
-              </Text>
-              <p
-                style={{
-                  fontFamily: "SF Pro Display",
-                  fontSize: "24px",
-                  marginLeft: "4px",
-                  color: "#39FF14",
-                  fontWeight: "bold",
-                  textShadow: "0px 0px 1px #000000",
-                }}
-                id="defisource"
-              ></p>
-            </Row>
-            </div>
-          </div>
-        </div>
-            <div
-              style={{
-                marginTop: "50px",
-                marginBottom: "20px",
-              }}
-            >
-              <Card
-                isPressable
-                className="btn-grad"
-                onPress={swapit}
-                style={{
-                  margin: "0 auto",
-                  maxWidth: "165px"
-                }}
-              >
-                <Text
-                  css={{
-                    display: "flex",
-                    justifyContent: "center",
-                    textShadow: "0px 0px 2px #000000",
-                  }}
-                  size="$3xl"
-                  weight="bold"
-                  transform="uppercase"
-                >
-                  SWAP !
-                </Text>
-              </Card>
-            </div>
-          </div>
-          </div>
-            </div>
-            <div class="panel" id="two-supp">
-                <div class="box-cskh bgfff pad16 row mb-8">
-
-                    <h3 class="title">Pending ...</h3>
-
-                </div>
-            </div>
-        </div>
-        </div>
-        
         </div>
       </div>
     </div>
