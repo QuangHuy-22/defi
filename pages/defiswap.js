@@ -35,6 +35,8 @@ export default function Defiswap() {
   const [wallet, getWallet] = useState([]);
   const [alert, setAlert] = useState(false);
   const [swap, setSwap] = useState(false);
+  const [price, setPrice] = useState([]);
+  const [orders, setOrder] = useState([]);
 
   const config = {
     apiKey: "6vk4ND2nxNThz8mY_RnIjbaiq7TeETMJ",
@@ -45,7 +47,14 @@ export default function Defiswap() {
 
   var zeroxapi = "https://api.0x.org";
 
-  useEffect(() => {}, [getFromLogo, getFromName, getFromAddr, getFromDec]);
+  useEffect(() => {}, [
+    getFromLogo,
+    getFromName,
+    getFromAddr,
+    getFromDec,
+    setPrice,
+    setOrder,
+  ]);
 
   useEffect(() => {}, [getToLogo, getToName, getToAddr]);
 
@@ -108,8 +117,41 @@ export default function Defiswap() {
   async function onDisconnect() {
     document.getElementById("status").textContent = "CONNECT";
   }
-  async function swapToken(){
+  async function swapToken() {
     setSwap(true);
+    if (!faddr || !taddr || !document.getElementById("from_amount").value)
+      return;
+    let amount = Number(
+      document.getElementById("from_amount").value * 10 ** fdec
+    );
+    const params = {
+      sellToken: faddr,
+      buyToken: taddr,
+      sellAmount: amount,
+    };
+    const response = await fetch(
+      zeroxapi + `/swap/v1/price?${qs.stringify(params)}`
+    );
+    const sources = await fetch(
+      zeroxapi + `/swap/v1/quote?${qs.stringify(params)}`
+    );
+    var swapPriceJSON = await response.json();
+    var swapOrders = await sources.json();
+    console.log(swapPriceJSON);
+    console.log(swapOrders);
+    try {
+      await swapOrders.orders.find((item) => {
+        document.getElementById("liquid_provider").innerHTML = item.source;
+      });
+    } catch (error) {
+      document.getElementById("liquid_provider").innerHTML =
+        "Pool Not Available";
+    }
+    var rawvalue = swapOrders.buyAmount / 10 ** tdec;
+    var value = rawvalue.toFixed(2);
+    // document.getElementById("to_amount").innerHTML = value;
+    document.getElementById("estimate_gas").innerHTML =
+      swapPriceJSON.estimatedGas;
   }
 
   async function listFromTokens() {
@@ -218,7 +260,6 @@ export default function Defiswap() {
       zeroxapi + `/swap/v1/quote?${qs.stringify(params)}`
     );
     var swapPriceJSON = await response.json();
-    console.log(swapPriceJSON);
     var swapOrders = await sources.json();
     try {
       await swapOrders.orders.find((item) => {
@@ -230,8 +271,6 @@ export default function Defiswap() {
     var rawvalue = swapOrders.buyAmount / 10 ** tdec;
     var value = rawvalue.toFixed(2);
     document.getElementById("to_amount").innerHTML = value;
-    document.getElementById("gas_estimate1").innerHTML =
-      swapPriceJSON.estimatedGas;
     document.getElementById("gas_estimate").innerHTML =
       swapPriceJSON.estimatedGas;
   }
@@ -707,36 +746,41 @@ export default function Defiswap() {
                         open={swap}
                       >
                         <Modal.Header>
-                        <div>
-                          <h3>
-                        Confirm Swap
-                          </h3>
-                        </div>
+                          <div>
+                            <h3>Confirm Swap</h3>
+                          </div>
                         </Modal.Header>
                         <Modal.Body>
-                          <Text
-                                  size="$3xl"
-                                  css={{
-                                    fontFamily: "SF Pro Display",
-                                    textShadow: "0px 0px 1px #000000",
-                                    fontWeight: "400",
-                                    color: "white",
-                                    ml: "$10",
-                                    fontSize: "17px",
-                                    background: "#363636",
-                                    paddingRight: "5px",
-                                    borderRadius: "30px",
-                                    padding: "6px 10px 0px 10px",
-                                    marginTop: "6px",
-                                    height: "45px",
-                                  }}
-                                >
-                                  <img src={flogo} style={{ width: "20px" }} />
-                                  <span style={{ fontSize: "20px" }}>
-                                    {" " + fname}
-                                  </span>
-                                </Text>
-                                <Text
+                          <div>
+                            <div style={{display:"flex", marginBottom:"10px"}}>
+                            <div>
+                              <Text
+                                size="$3xl"
+                                css={{
+                                  fontFamily: "SF Pro Display",
+                                  textShadow: "0px 0px 1px #000000",
+                                  fontWeight: "400",
+                                  color: "white",
+                                  ml: "$10",
+                                  fontSize: "17px",
+                                  background: "#363636",
+                                  paddingRight: "5px",
+                                  borderRadius: "30px",
+                                  padding: "6px 10px 0px 10px",
+                                  marginTop: "6px",
+                                  height: "45px",
+                                  maxWidth: "150px",
+                                  textAlign: "center",
+                                }}
+                              >
+                                <img src={flogo} style={{ width: "20px" }} />
+                                <span style={{ fontSize: "20px" }}>
+                                  {" " + fname}
+                                </span>
+                              </Text>
+                            </div>
+                            <div>
+                              <Text
                                 size="$3xl"
                                 css={{
                                   fontFamily: "SF Pro Display",
@@ -751,6 +795,8 @@ export default function Defiswap() {
                                   padding: "4px 18px 0px 18px",
                                   marginTop: "5px",
                                   height: "45px",
+                                  maxWidth: "150px",
+                                  textAlign: "center",
                                 }}
                               >
                                 <img src={tlogo} style={{ width: "20px" }} />
@@ -758,53 +804,55 @@ export default function Defiswap() {
                                   {" " + tname}
                                 </span>
                               </Text>
-                              <div>
-                          <Row>
-                            <Text
-                              size={20}
-                              css={{ marginLeft: "$5", color: "white" }}
-                            >
-                              Gas Estimate:{" "}
-                            </Text>
-                            <p
-                              style={{
-                                fontFamily: "SF Pro Display",
-                                fontSize: "24px",
-                                marginLeft: "4px",
-                                color: "#39FF14",
-                                fontWeight: "bold",
-                                textShadow: "0px 0px 1px #000000",
-                              }}
-                              id="gas_estimate1"
-                            ></p>
-                          </Row>
-                        </div>
-                              <div>
-                              <Row>
-                            <Text
-                              size={24}
-                              css={{ marginLeft: "$5", color: "white" }}
-                            >
-                              LP Provider:{" "}
-                            </Text>
-                            <p
-                              style={{
-                                fontFamily: "SF Pro Display",
-                                fontSize: "24px",
-                                marginLeft: "4px",
-                                color: "#39FF14",
-                                fontWeight: "bold",
-                                textShadow: "0px 0px 1px #000000",
-                              }}
-                              id="defisource"
-                            ></p>
-                          </Row>
+                            </div>
+                            </div>
+                            <div>
+                              <div style={{display:"flex", alignItems: "center", justifyContent:"space-between"}}>
+                                <span
+                                  size={20}
+                                  css={{ marginLeft: "$5", color: "white" }}
+                                  style={{fontSize:"15px",fontFamily: "SF Pro Display", fontWeight: "bold",}}
+                                >
+                                  Gas Estimate:{" "}
+                                </span>
+                                <p
+                                  style={{
+                                    fontFamily: "SF Pro Display",
+                                    fontSize: "15px",
+                                    marginLeft: "4px",
+                                    color: "white",
+                                    textShadow: "0px 0px 1px #000000",
+                                  }}
+                                  id="estimate_gas"
+                                >
+                                </p>
+                              </div>
+                            </div>
+                            <div>
+                              <div style={{display:"flex", alignItems: "center", justifyContent:"space-between"}}>
+                                <span
+                                  size={24}
+                                  css={{ marginLeft: "$5", color: "white" }}
+                                  style={{fontSize:"15px",fontFamily: "SF Pro Display",}}
+                                >
+                                  LP Provider:{" "}
+                                </span>
+                                <p
+                                  style={{
+                                    fontFamily: "SF Pro Display",
+                                    fontSize: "15px",
+                                    marginLeft: "4px",
+                                    color: "white",
+                                    textShadow: "0px 0px 1px #000000",
+                                  }}
+                                  id="liquid_provider"
+                                >
+                                </p>
+                              </div>
+                            </div>
                           </div>
                         </Modal.Body>
                         <Modal.Footer>
-                          <Button auto flat color="primary" onClick={connect}>
-                            Connect Wallet
-                          </Button>
                           <Button
                             auto
                             flat
