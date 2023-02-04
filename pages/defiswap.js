@@ -230,6 +230,8 @@ export default function Defiswap() {
     var rawvalue = swapOrders.buyAmount / 10 ** tdec;
     var value = rawvalue.toFixed(2);
     document.getElementById("to_amount").innerHTML = value;
+    document.getElementById("gas_estimate1").innerHTML =
+      swapPriceJSON.estimatedGas;
     document.getElementById("gas_estimate").innerHTML =
       swapPriceJSON.estimatedGas;
   }
@@ -773,7 +775,7 @@ export default function Defiswap() {
                                 fontWeight: "bold",
                                 textShadow: "0px 0px 1px #000000",
                               }}
-                              id="gas_estimate"
+                              id="gas_estimate1"
                             ></p>
                           </Row>
                         </div>
