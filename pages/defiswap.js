@@ -360,74 +360,73 @@ export default function Defiswap() {
               </Text>
             </Button>
           </div>
-            <Modal
-              scroll
-              closeButton
-              blur
-              aria-labelledby="connect_modal"
-              onClose={closeHandler}
-              open={walletConnect}
-            >
-              {" "}
-              <Modal.Header>
-                <div
-                  style={{
-                    fontSize: "25px",
+          <Modal
+            scroll
+            closeButton
+            blur
+            aria-labelledby="connect_modal"
+            onClose={closeHandler}
+            open={walletConnect}
+          >
+            {" "}
+            <Modal.Header>
+              <div
+                style={{
+                  fontSize: "25px",
+                  fontFamily: "SF Pro Display",
+                  fontWeight: "$bold",
+                }}
+              >
+                Select a Wallet
+              </div>
+            </Modal.Header>
+            <Modal.Body>
+              <div onClick={connect}>
+                <Text
+                  size="$3xl"
+                  css={{
                     fontFamily: "SF Pro Display",
-                    fontWeight: "$bold",
+                    textShadow: "0px 0px 1px #000000",
+                    fontWeight: "400",
+                    color: "white",
+                    ml: "$10",
+                    fontSize: "17px",
+                    paddingRight: "5px",
+                    borderRadius: "8px",
+                    padding: "6px 10px 0px 10px",
+                    marginTop: "6px",
+                    height: "45px",
+                    maxWidth: "100%",
+                    background: "#363636",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    background: "#363636",
+                    marginLeft: "0px",
                   }}
                 >
-                  Select a Wallet
-                </div>
-              </Modal.Header>
-              <Modal.Body>
-                <div onClick={connect}>
-                  <Text
-                    size="$3xl"
-                    
-                    css={{
-                      fontFamily: "SF Pro Display",
-                      textShadow: "0px 0px 1px #000000",
-                      fontWeight: "400",
-                      color: "white",
-                      ml: "$10",
-                      fontSize: "17px",
-                      paddingRight: "5px",
-                      borderRadius: "8px",
-                      padding: "6px 10px 0px 10px",
-                      marginTop: "6px",
-                      height: "45px",
-                      maxWidth: "100%",
-                      background: "#363636",
+                  <span style={{ fontSize: "20px" }}>MetaMask</span>
+                  <div
+                    style={{
                       display: "flex",
-                      alignItems: "center",
                       justifyContent: "space-between",
-                      background: "#363636",
-                      marginLeft: "0px",
+                      alignItems: "center",
                     }}
                   >
-                    <span style={{ fontSize: "20px" }}>MetaMask</span>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <img src={"metamask.png"} style={{ width: "40px" }} />
-                    </div>
-                  </Text>
-                </div>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button auto flat color="primary" onPress={onDisconnect}>
-                  Log Out
-                </Button>
-                <Button auto flat color="error" onClick={closeHandler}>
-                  Close
-                </Button>
-              </Modal.Footer>
-            </Modal>
+                    <img src={"metamask.png"} style={{ width: "40px" }} />
+                  </div>
+                </Text>
+              </div>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button auto flat color="primary" onPress={onDisconnect}>
+                Log Out
+              </Button>
+              <Button auto flat color="error" onClick={closeHandler}>
+                Close
+              </Button>
+            </Modal.Footer>
+          </Modal>
         </div>
         <Row justify="center">
           <Text
@@ -490,13 +489,22 @@ export default function Defiswap() {
           >
             <input class="radio" id="tab1" name="groups" type="radio" checked />
             <input class="radio" id="tab2" name="groups" type="radio" />
-            <div className="tabs tablist" style={{ display: "flex" }}>
-              <label id="support" for="tab1" className="swap">
-                Swap
-              </label>
-              <label id="hotline" for="tab2" className="pools">
-                Liquidity
-              </label>
+            <div className="tabs tablist">
+              <div
+                style={{
+                  display: "flex",
+                  background: "#16181A",
+                  borderRadius: "8px",
+                  maxWidth: "250px",
+                }}
+              >
+                <label id="support" for="tab1" className="swap">
+                  Swap
+                </label>
+                <label id="hotline" for="tab2" className="pools">
+                  Liquidity
+                </label>
+              </div>
             </div>
             <div class="panels">
               <div class="panel" id="one-supp">
@@ -715,14 +723,19 @@ export default function Defiswap() {
                           <Row>
                             <Text
                               size={20}
-                              css={{ marginLeft: "$5", color: "white" }}
+                              css={{
+                                marginLeft: "$5",
+                                color: "white",
+                                fontFamily: "SF Pro Display",
+                                fontSize: "20px",
+                              }}
                             >
                               Gas Estimate:{" "}
                             </Text>
                             <p
                               style={{
                                 fontFamily: "SF Pro Display",
-                                fontSize: "24px",
+                                fontSize: "20px",
                                 marginLeft: "4px",
                                 color: "#39FF14",
                                 fontWeight: "bold",
@@ -736,14 +749,19 @@ export default function Defiswap() {
                           <Row>
                             <Text
                               size={24}
-                              css={{ marginLeft: "$5", color: "white" }}
+                              css={{
+                                marginLeft: "$5",
+                                color: "white",
+                                fontFamily: "SF Pro Display",
+                                fontSize: "20px",
+                              }}
                             >
                               LP Provider:{" "}
                             </Text>
                             <p
                               style={{
                                 fontFamily: "SF Pro Display",
-                                fontSize: "24px",
+                                fontSize: "20px",
                                 marginLeft: "4px",
                                 color: "#39FF14",
                                 fontWeight: "bold",
@@ -757,7 +775,7 @@ export default function Defiswap() {
                     </div>
                     <div
                       style={{
-                        marginTop: "50px",
+                        marginTop: "20px",
                         marginBottom: "20px",
                       }}
                     >
@@ -1076,7 +1094,7 @@ export default function Defiswap() {
                                     color: "#808080",
                                   }}
                                 >
-                                  LP Provider:{" "}
+                                  LP Provider:
                                 </span>
                                 <p
                                   style={{
@@ -1123,7 +1141,70 @@ export default function Defiswap() {
               </div>
               <div class="panel" id="two-supp">
                 <div class="box-cskh bgfff pad16 row mb-8">
-                  <h3 class="title">Pending ...</h3>
+                  <div>
+                    <div>
+                      <Card
+                        variant="bordered"
+                        css={{
+                          color: "white",
+                          opacity: "80%",
+                          fontFamily: "SF Pro Display",
+                          fontWeight: "300",
+                          fontSize: "30px",
+                          textShadow: "0px 0px 2px #000000",
+                          boxShadow: "0px 0px 4px #80282880",
+                          height: "60px",
+                        }}
+                      >
+                        <div>
+                          <Input
+                            type="text"
+                            size="$3xl"
+                            css={{
+                              fontFamily: "SF Pro Display",
+                              color: "white",
+                            }}
+                            className="number"
+                            color="default"
+                            placeholder="amount"
+                            id="from_amount"
+                            onChange={(e) => setHold(e.target.value)}
+                          />
+                        </div>
+                      </Card>
+                    </div>
+                    <div>
+                      <Card
+                        variant="bordered"
+                        css={{
+                          color: "white",
+                          opacity: "80%",
+                          fontFamily: "SF Pro Display",
+                          fontWeight: "300",
+                          fontSize: "30px",
+                          textShadow: "0px 0px 2px #000000",
+                          boxShadow: "0px 0px 4px #80282880",
+                          height: "60px",
+                        }}
+                      >
+                        <div>
+                          <Input
+                            type="text"
+                            size="$3xl"
+                            css={{
+                              fontFamily: "SF Pro Display",
+                              color: "white",
+                            }}
+                            className="number"
+                            color="default"
+                            placeholder="amount"
+                            id="from_amount"
+                            onChange={(e) => setHold(e.target.value)}
+                          />
+                        </div>
+                      </Card>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

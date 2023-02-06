@@ -1,3 +1,7 @@
+html{
+  background-image: linear-gradient(to right, #421e64, rgb(15, 5, 24));
+}
+
 .container {
   padding-top: 2%;
   padding-bottom: 20%;
@@ -101,11 +105,12 @@ input::placeholder {
   text-decoration: none;
 }
 .swap {
-  margin: 0px 55px 0px 0px;
+  padding: 0px 25px 0px 25px;
   font-family: SF Pro Display;
   font-size: 25px;
 }
 .pools {
+  padding: 0px 25px 0px 25px;
   font-family: SF Pro Display;
   font-size: 25px;
 }
@@ -137,21 +142,25 @@ input::placeholder {
     #two:checked~.tabs #two-tab,
     #three:checked~.tabs #three-tab {
         background: #CF3A3E;
-        border-radius: 16px;
+        /* border-radius: 8px; */
         color: #fff;
         font-weight: 500;
     }
 
     #tab1:checked~.tabs #support,
     #tab2:checked~.tabs #hotline {
-        /* background: #CF3A3E; */
-        border-radius: 16px;
-        color: rgb(197, 21, 21);
+      background-image: linear-gradient(
+        to right,
+        #dc2424 0%,
+        #4a569d 51%,
+        #dc2424 100%
+      );
+        border-radius: 8px;
+        /* color: rgb(197, 21, 21); */
         font-weight: 500;
     }
 
     .tablist {
-      /* background-color: rgb(63, 48, 77); */
       grid-template-columns: 50% 50%;
   }
 
@@ -159,7 +168,7 @@ input::placeholder {
     #two:checked~.tabs #two-tab,
     #three:checked~.tabs #three-tab {
         background: #CF3A3E;
-        border-radius: 16px;
+        border-radius: 8px;
         color: #fff;
         font-weight: 500;
     }
