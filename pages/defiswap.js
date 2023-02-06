@@ -35,6 +35,7 @@ export default function Defiswap() {
   const [wallet, getWallet] = useState([]);
   const [alert, setAlert] = useState(false);
   const [swap, setSwap] = useState(false);
+  const [walletConnect, setWalletConnect] = useState(false);
   const [price, setPrice] = useState([]);
   const [orders, setOrder] = useState([]);
 
@@ -96,8 +97,14 @@ export default function Defiswap() {
     setVisible(false);
     setAlert(false);
     setSwap(false);
+    setWalletConnect(false);
     console.log("closed");
   };
+
+  async function modalWallet() {
+    setWalletConnect(true);
+  }
+
   async function connect() {
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
@@ -116,6 +123,7 @@ export default function Defiswap() {
   }
   async function onDisconnect() {
     document.getElementById("status").textContent = "CONNECT";
+    closeHandler();
   }
   async function swapToken() {
     setSwap(true);
@@ -137,8 +145,6 @@ export default function Defiswap() {
     );
     var swapPriceJSON = await response.json();
     var swapOrders = await sources.json();
-    console.log(swapPriceJSON);
-    console.log(swapOrders);
     try {
       await swapOrders.orders.find((item) => {
         document.getElementById("liquid_provider").innerHTML = item.source;
@@ -149,9 +155,15 @@ export default function Defiswap() {
     }
     var rawvalue = swapOrders.buyAmount / 10 ** tdec;
     var value = rawvalue.toFixed(2);
-    // document.getElementById("to_amount").innerHTML = value;
+    var sellvalue = swapOrders.sellAmount / 10 ** fdec;
+    var sell = sellvalue.toFixed(2);
+    document.getElementById("raw").innerHTML = value;
+    document.getElementById("minimum_reveived").innerHTML = value;
+    document.getElementById("sell_value").innerHTML = sell;
     document.getElementById("estimate_gas").innerHTML =
       swapPriceJSON.estimatedGas;
+    console.log(swapPriceJSON);
+    console.log(swapOrders);
   }
 
   async function listFromTokens() {
@@ -314,6 +326,7 @@ export default function Defiswap() {
       method: "eth_sendTransaction",
       params: [txParams],
     });
+    closeHandler();
   }
 
   return (
@@ -332,8 +345,9 @@ export default function Defiswap() {
             <Button
               rounded
               color="primary"
-              onPress={connect}
+              onPress={modalWallet}
               className="btn-connect"
+              style={{ maxWidth: "200px" }}
             >
               <Text
                 css={{ color: "white" }}
@@ -342,46 +356,78 @@ export default function Defiswap() {
                 transform="uppercase"
                 id="status"
               >
-                CONNECT
+                Connect to a wallet
               </Text>
             </Button>
           </div>
-          <div className="buttonDisConnect">
-            <Button
-              rounded
-              color="primary"
-              onPress={onDisconnect}
-              className="btn-connect"
+            <Modal
+              scroll
+              closeButton
+              blur
+              aria-labelledby="connect_modal"
+              onClose={closeHandler}
+              open={walletConnect}
             >
-              <Text
-                css={{ color: "white" }}
-                size={16}
-                weight="bold"
-                transform="uppercase"
-                id="status"
-              >
-                Dis Connect
-              </Text>
-            </Button>
-          </div>
-          <div className="buttonDisConnect">
-            <Button
-              rounded
-              color="primary"
-              onPress={swapToken}
-              className="btn-connect"
-            >
-              <Text
-                css={{ color: "white" }}
-                size={16}
-                weight="bold"
-                transform="uppercase"
-                id="status"
-              >
-                Swap it
-              </Text>
-            </Button>
-          </div>
+              {" "}
+              <Modal.Header>
+                <div
+                  style={{
+                    fontSize: "25px",
+                    fontFamily: "SF Pro Display",
+                    fontWeight: "$bold",
+                  }}
+                >
+                  Select a Wallet
+                </div>
+              </Modal.Header>
+              <Modal.Body>
+                <div onClick={connect}>
+                  <Text
+                    size="$3xl"
+                    
+                    css={{
+                      fontFamily: "SF Pro Display",
+                      textShadow: "0px 0px 1px #000000",
+                      fontWeight: "400",
+                      color: "white",
+                      ml: "$10",
+                      fontSize: "17px",
+                      paddingRight: "5px",
+                      borderRadius: "8px",
+                      padding: "6px 10px 0px 10px",
+                      marginTop: "6px",
+                      height: "45px",
+                      maxWidth: "100%",
+                      background: "#363636",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      background: "#363636",
+                      marginLeft: "0px",
+                    }}
+                  >
+                    <span style={{ fontSize: "20px" }}>MetaMask</span>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <img src={"metamask.png"} style={{ width: "40px" }} />
+                    </div>
+                  </Text>
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button auto flat color="primary" onPress={onDisconnect}>
+                  Log Out
+                </Button>
+                <Button auto flat color="error" onClick={closeHandler}>
+                  Close
+                </Button>
+              </Modal.Footer>
+            </Modal>
         </div>
         <Row justify="center">
           <Text
@@ -718,7 +764,7 @@ export default function Defiswap() {
                       <Card
                         isPressable
                         className="btn-grad"
-                        onPress={swapit}
+                        onPress={swapToken}
                         style={{
                           margin: "0 auto",
                           maxWidth: "165px",
@@ -729,6 +775,7 @@ export default function Defiswap() {
                             display: "flex",
                             justifyContent: "center",
                             textShadow: "0px 0px 2px #000000",
+                            disable: "disable",
                           }}
                           size="$3xl"
                           weight="bold"
@@ -746,72 +793,256 @@ export default function Defiswap() {
                         open={swap}
                       >
                         <Modal.Header>
-                          <div>
-                            <h3>Confirm Swap</h3>
+                          <div
+                            style={{
+                              fontSize: "25px",
+                              fontFamily: "SF Pro Display",
+                              fontWeight: "$bold",
+                            }}
+                          >
+                            Confirm Swap
                           </div>
                         </Modal.Header>
                         <Modal.Body>
                           <div>
-                            <div style={{display:"flex", marginBottom:"10px"}}>
-                            <div>
-                              <Text
-                                size="$3xl"
-                                css={{
-                                  fontFamily: "SF Pro Display",
-                                  textShadow: "0px 0px 1px #000000",
-                                  fontWeight: "400",
-                                  color: "white",
-                                  ml: "$10",
-                                  fontSize: "17px",
-                                  background: "#363636",
-                                  paddingRight: "5px",
-                                  borderRadius: "30px",
-                                  padding: "6px 10px 0px 10px",
-                                  marginTop: "6px",
-                                  height: "45px",
-                                  maxWidth: "150px",
-                                  textAlign: "center",
+                            <div
+                              style={{
+                                marginBottom: "30px",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <div>
+                                <Text
+                                  size="$3xl"
+                                  css={{
+                                    fontFamily: "SF Pro Display",
+                                    textShadow: "0px 0px 1px #000000",
+                                    fontWeight: "400",
+                                    color: "white",
+                                    ml: "$10",
+                                    fontSize: "17px",
+                                    paddingRight: "5px",
+                                    borderRadius: "30px",
+                                    padding: "6px 10px 0px 10px",
+                                    marginTop: "6px",
+                                    height: "45px",
+                                    maxWidth: "100%",
+                                    background: "#363636",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    background: "#363636",
+                                    marginLeft: "0px",
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <img
+                                      src={flogo}
+                                      style={{ width: "30px" }}
+                                    />
+                                    <Text
+                                      type="text"
+                                      size="15px"
+                                      css={{
+                                        fontFamily: "SF Pro Display",
+                                        color: "white",
+                                        textShadow: "0px 0px 3px #39FF14",
+                                        ml: "$2",
+                                      }}
+                                      className="number"
+                                      color="default"
+                                      id="sell_value"
+                                    />
+                                  </div>
+                                  <span style={{ fontSize: "20px" }}>
+                                    {" " + fname}
+                                  </span>
+                                </Text>
+                              </div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  margin: "5px 0px",
                                 }}
                               >
-                                <img src={flogo} style={{ width: "20px" }} />
-                                <span style={{ fontSize: "20px" }}>
-                                  {" " + fname}
-                                </span>
-                              </Text>
+                                <img
+                                  src={"anh.png"}
+                                  style={{ width: "30px" }}
+                                />
+                              </div>
+                              <div>
+                                <Text
+                                  size="$3xl"
+                                  css={{
+                                    fontFamily: "SF Pro Display",
+                                    textShadow: "0px 0px 1px #000000",
+                                    fontWeight: "400",
+                                    color: "white",
+                                    ml: "$10",
+                                    fontSize: "15px",
+                                    paddingRight: "5px",
+                                    borderRadius: "30px",
+                                    padding: "4px 10px 0px 10px",
+                                    marginTop: "5px",
+                                    height: "45px",
+                                    maxWidth: "100%",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    background: "#363636",
+                                    marginLeft: "0px",
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <img
+                                      src={tlogo}
+                                      style={{ width: "30px" }}
+                                    />
+                                    <Text
+                                      type="text"
+                                      size="15px"
+                                      css={{
+                                        fontFamily: "SF Pro Display",
+                                        color: "white",
+                                        textShadow: "0px 0px 3px #39FF14",
+                                        ml: "$2",
+                                      }}
+                                      className="number"
+                                      color="default"
+                                      id="raw"
+                                    />
+                                  </div>
+                                  <span style={{ fontSize: "20px" }}>
+                                    {" " + tname}
+                                  </span>
+                                </Text>
+                              </div>
                             </div>
                             <div>
-                              <Text
-                                size="$3xl"
-                                css={{
-                                  fontFamily: "SF Pro Display",
-                                  textShadow: "0px 0px 1px #000000",
-                                  fontWeight: "400",
-                                  color: "white",
-                                  ml: "$10",
-                                  fontSize: "15px",
-                                  background: "#363636",
-                                  paddingRight: "5px",
-                                  borderRadius: "30px",
-                                  padding: "4px 18px 0px 18px",
-                                  marginTop: "5px",
-                                  height: "45px",
-                                  maxWidth: "150px",
-                                  textAlign: "center",
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
                                 }}
                               >
-                                <img src={tlogo} style={{ width: "20px" }} />
-                                <span style={{ fontSize: "20px" }}>
-                                  {" " + tname}
-                                </span>
-                              </Text>
-                            </div>
-                            </div>
-                            <div>
-                              <div style={{display:"flex", alignItems: "center", justifyContent:"space-between"}}>
                                 <span
                                   size={20}
-                                  css={{ marginLeft: "$5", color: "white" }}
-                                  style={{fontSize:"15px",fontFamily: "SF Pro Display", fontWeight: "bold",}}
+                                  css={{ marginLeft: "$5" }}
+                                  style={{
+                                    fontSize: "15px",
+                                    fontFamily: "SF Pro Display",
+                                    fontWeight: "bold",
+                                    color: "#808080",
+                                  }}
+                                >
+                                  Route:{" "}
+                                </span>
+                                <div style={{ display: "flex" }}>
+                                  <p
+                                    style={{
+                                      fontFamily: "SF Pro Display",
+                                      fontSize: "15px",
+                                      marginLeft: "4px",
+                                      color: "white",
+                                      textShadow: "0px 0px 1px #000000",
+                                    }}
+                                    id=""
+                                  >
+                                    {fname}
+                                  </p>
+                                  <p
+                                    style={{
+                                      fontFamily: "SF Pro Display",
+                                      fontSize: "15px",
+                                      marginLeft: "4px",
+                                      color: "white",
+                                      textShadow: "0px 0px 1px #000000",
+                                    }}
+                                    id=""
+                                  >
+                                    {">"}
+                                  </p>
+                                  <p
+                                    style={{
+                                      fontFamily: "SF Pro Display",
+                                      fontSize: "15px",
+                                      marginLeft: "4px",
+                                      color: "white",
+                                      textShadow: "0px 0px 1px #000000",
+                                    }}
+                                    id=""
+                                  >
+                                    {tname}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                            <div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <span
+                                  size={20}
+                                  css={{ marginLeft: "$5" }}
+                                  style={{
+                                    fontSize: "15px",
+                                    fontFamily: "SF Pro Display",
+                                    fontWeight: "bold",
+                                    color: "#808080",
+                                  }}
+                                >
+                                  Minimum reveived:{" "}
+                                </span>
+                                <Text
+                                  type="text"
+                                  size="15px"
+                                  css={{
+                                    fontFamily: "SF Pro Display",
+                                    color: "white",
+                                    textShadow: "0px 0px 3px #39FF14",
+                                    ml: "$2",
+                                  }}
+                                  className="number"
+                                  color="default"
+                                  id="minimum_reveived"
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <span
+                                  size={20}
+                                  css={{ marginLeft: "$5" }}
+                                  style={{
+                                    fontSize: "15px",
+                                    fontFamily: "SF Pro Display",
+                                    fontWeight: "bold",
+                                    color: "#808080",
+                                  }}
                                 >
                                   Gas Estimate:{" "}
                                 </span>
@@ -824,16 +1055,26 @@ export default function Defiswap() {
                                     textShadow: "0px 0px 1px #000000",
                                   }}
                                   id="estimate_gas"
-                                >
-                                </p>
+                                ></p>
                               </div>
                             </div>
                             <div>
-                              <div style={{display:"flex", alignItems: "center", justifyContent:"space-between"}}>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                }}
+                              >
                                 <span
                                   size={24}
                                   css={{ marginLeft: "$5", color: "white" }}
-                                  style={{fontSize:"15px",fontFamily: "SF Pro Display",}}
+                                  style={{
+                                    fontSize: "15px",
+                                    fontFamily: "SF Pro Display",
+                                    fontWeight: "bold",
+                                    color: "#808080",
+                                  }}
                                 >
                                   LP Provider:{" "}
                                 </span>
@@ -846,21 +1087,34 @@ export default function Defiswap() {
                                     textShadow: "0px 0px 1px #000000",
                                   }}
                                   id="liquid_provider"
-                                >
-                                </p>
+                                ></p>
                               </div>
                             </div>
                           </div>
                         </Modal.Body>
                         <Modal.Footer>
-                          <Button
-                            auto
-                            flat
-                            color="error"
-                            onClick={closeHandler}
+                          <Card
+                            isPressable
+                            className="btn-grad"
+                            onPress={swapit}
+                            style={{
+                              margin: "0 auto",
+                              maxWidth: "100%",
+                              height: "45px",
+                            }}
                           >
-                            Close
-                          </Button>
+                            <Text
+                              css={{
+                                display: "flex",
+                                justifyContent: "center",
+                                textShadow: "0px 0px 2px #000000",
+                              }}
+                              size="22px"
+                              weight="bold"
+                            >
+                              Confirm Swap
+                            </Text>
+                          </Card>
                         </Modal.Footer>
                       </Modal>
                     </div>

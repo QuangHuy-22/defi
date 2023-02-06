@@ -58,12 +58,8 @@ input::placeholder {
 }
 
 .btn-grad {
-  background-image: linear-gradient(
-    to right,
-    #dc2424 0%,
-    #4a569d 51%,
-    #dc2424 100%
-  );
+  /* background-image: linear-gradient( to right, #dc2424 0%, #4a569d 51%, #dc2424 100%  ); */
+  background-image: linear-gradient( to right, #dc2424 0%, #4a569d 51%, #dc2424 100%  );
   margin: 10px;
   /* padding: 15px 45px; */
   text-align: center;
