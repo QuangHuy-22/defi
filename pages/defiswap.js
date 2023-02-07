@@ -82,6 +82,24 @@ export default function Defiswap() {
       sendAlert();
     }
   };
+  const fromToken = (side) => {
+    if (wallet.includes("0x")) {
+      setVisible(true);
+      currentSelectSide = side;
+      listFromLiquidTokens();
+    } else {
+      sendAlert();
+    }
+  };
+  const toToken = (side) => {
+    if (wallet.includes("0x")) {
+      setVisible(true);
+      currentSelectSide = side;
+      listFromTokens();
+    } else {
+      sendAlert();
+    }
+  };
 
   const toHandler = (side) => {
     setVisible(true);
@@ -167,6 +185,25 @@ export default function Defiswap() {
   }
 
   async function listFromTokens() {
+    let response = await fetch("http://localhost:3000/api/tokens");
+    let tokenListJSON = await response.json();
+    var tokens = tokenListJSON.tokens;
+    let parent = document.getElementById("token_list");
+    for (const i in tokens) {
+      let div = document.createElement("div");
+      div.className = "token_row";
+      let html = `
+          <img className="token_list_img" width="12%" src="${tokens[i].logoURI}">
+            <span className="token_list_text">${tokens[i].symbol}</span>
+            `;
+      div.innerHTML = html;
+      div.onclick = () => {
+        selectFrom(tokens[i]);
+      };
+      parent.appendChild(div);
+    }
+  }
+  async function listFromLiquidTokens() {
     let response = await fetch("http://localhost:3000/api/tokens");
     let tokenListJSON = await response.json();
     var tokens = tokenListJSON.tokens;
@@ -329,6 +366,7 @@ export default function Defiswap() {
     console.log(ethereum);
     closeHandler();
   }
+
   async function onSwap(e) {
     console.log(e.currentTarget.className);
     console.log(e.currentTarget.title);
@@ -1200,7 +1238,7 @@ export default function Defiswap() {
                           top: "3px",
                         }}
                       >
-                        <a onClick={modalWallet}>
+                        <a onClick={fromToken}>
                           <Text
                             size="$3xl"
                             css={{
@@ -1226,8 +1264,8 @@ export default function Defiswap() {
                         </a>
                       </div>
                     </div>
-                  <div className="img_pluss" style={{position:"absolute",top:"50px", right:"30px" }}>
-                    <img src="pluss.png" alt="" width={"40px"} style={{ background: "rgb(22, 24, 26)", borderRadius:"50%"}} />
+                  <div className="img_pluss" style={{position:"absolute",top:"50px", right:"30px", zIndex:"9" }}>
+                    <img src="pluss.png" alt="" style={{ maxWidth: "30px"}} />
                   </div>
                   </div>
                   <div className="aroundGrid">
