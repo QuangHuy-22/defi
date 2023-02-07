@@ -9,7 +9,7 @@ const darkTheme = createTheme({
 
 function MyApp({ Component, pageProps }) {
   return (
-    <NextUIProvider  theme={darkTheme}>
+    <NextUIProvider  theme={darkTheme} >
       {/* <Component {...pageProps} /> */}
       <Defiswap />
     </NextUIProvider>
