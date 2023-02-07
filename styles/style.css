@@ -104,31 +104,30 @@ input::placeholder {
   color: #fff;
   text-decoration: none;
 }
-.swap {
+.tablinks {
   padding: 0px 25px 0px 25px;
   font-family: SF Pro Display;
   font-size: 25px;
 }
-.pools {
+/* .pools {
   padding: 0px 25px 0px 25px;
   font-family: SF Pro Display;
   font-size: 25px;
-}
+} */
 
 .radio {
   display: none;
 }
-#tab1:checked ~ .panels #one-supp,
+/* #tab1:checked ~ .panels #one-supp,
 #tab2:checked ~ .panels #two-supp {
   display: block;
-}
-#tab1:checked ~ .tabs #support,
+} */
+/* #tab1:checked ~ .tabs #support,
 #tab2:checked ~ .tabs #hotline {
-  /* background: #cf3a3e; */
   border-radius: 16px;
   color: #fff;
   font-weight: 500;
-}
+} */
 
 .tabs {
   border-radius: 20px;
@@ -138,16 +137,15 @@ input::placeholder {
   grid-template-columns: 33.4% 33.4% 33.4%;
   padding: 5px;
 }
-#one:checked~.tabs #one-tab,
+/* #one:checked~.tabs #one-tab,
     #two:checked~.tabs #two-tab,
     #three:checked~.tabs #three-tab {
         background: #CF3A3E;
-        /* border-radius: 8px; */
         color: #fff;
         font-weight: 500;
-    }
+    } */
 
-    #tab1:checked~.tabs #support,
+    /* #tab1:checked~.tabs #support,
     #tab2:checked~.tabs #hotline {
       background-image: linear-gradient(
         to right,
@@ -156,22 +154,21 @@ input::placeholder {
         #dc2424 100%
       );
         border-radius: 8px;
-        /* color: rgb(197, 21, 21); */
         font-weight: 500;
-    }
+    } */
 
     .tablist {
       grid-template-columns: 50% 50%;
   }
 
-  #one:checked~.tabs #one-tab,
+  /* #one:checked~.tabs #one-tab,
     #two:checked~.tabs #two-tab,
     #three:checked~.tabs #three-tab {
         background: #CF3A3E;
         border-radius: 8px;
         color: #fff;
         font-weight: 500;
-    }
+    } */
     .tab {
       cursor: pointer;
       padding: 8px 0;
@@ -182,17 +179,17 @@ input::placeholder {
   .panels {
     width: 100%;
 }
-#tab1:checked~.panels #one-supp,
+/* #tab1:checked~.panels #one-supp,
     #tab2:checked~.panels #two-supp {
         display: block
-    }
+    } */
 
     .panel {
       display: none;
       animation: fadein .8s;
   }
 
-  #one:checked~.panels #one-panel,
+  /* #one:checked~.panels #one-panel,
     #two:checked~.panels #two-panel,
     #three:checked~.panels #three-panel {
         display: block
@@ -201,4 +198,25 @@ input::placeholder {
     #tab1:checked~.panels #one-supp,
     #tab2:checked~.panels #two-supp {
         display: block
+    } */
+    #hotline{
+      display: none;
+    }
+    .swap .active{
+      background-image: linear-gradient(
+        to right,
+        #dc2424 0%,
+        #4a569d 51%,
+        #dc2424 100%
+      );
+      border-radius: 8px;
+    }
+    .active{
+      background-image: linear-gradient(
+        to right,
+        #dc2424 0%,
+        #4a569d 51%,
+        #dc2424 100%
+      );
+      border-radius: 8px;
     }

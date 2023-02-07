@@ -326,7 +326,26 @@ export default function Defiswap() {
       method: "eth_sendTransaction",
       params: [txParams],
     });
+    console.log(ethereum);
     closeHandler();
+  }
+  async function onSwap(e) {
+    console.log(e.currentTarget.className);
+    console.log(e.currentTarget.title);
+    const name = e.currentTarget.title
+    var i;
+    const tabcontent = document.getElementsByClassName("tabcontent")
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+
+    const tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+
+    document.getElementById(name).style.display = "block";
+    e.currentTarget.className += " active";
   }
 
   return (
@@ -498,16 +517,16 @@ export default function Defiswap() {
                   maxWidth: "250px",
                 }}
               >
-                <label id="support" for="tab1" className="swap">
+                <label title="support" for="tab1" className="tablinks active"  onClick={onSwap}>
                   Swap
                 </label>
-                <label id="hotline" for="tab2" className="pools">
+                <label title="hotline" for="tab2" className="tablinks"  onClick={onSwap}>
                   Liquidity
                 </label>
               </div>
             </div>
             <div class="panels">
-              <div class="panel" id="one-supp">
+              <div class="tabcontent" id="support">
                 <div>
                   <div>
                     <div>
@@ -1139,70 +1158,143 @@ export default function Defiswap() {
                   </div>
                 </div>
               </div>
-              <div class="panel" id="two-supp">
-                <div class="box-cskh bgfff pad16 row mb-8">
-                  <div>
+              <div class="tabcontent" id="hotline">
+                <div class="add_liquidity box-cskh bgfff pad16 row mb-8" style={{position:"relative"}} >
+                  <div className="aroundGrid" style={{marginBottom:"25px",}} >
                     <div>
-                      <Card
-                        variant="bordered"
-                        css={{
-                          color: "white",
-                          opacity: "80%",
-                          fontFamily: "SF Pro Display",
-                          fontWeight: "300",
-                          fontSize: "30px",
-                          textShadow: "0px 0px 2px #000000",
-                          boxShadow: "0px 0px 4px #80282880",
-                          height: "60px",
+                      <div>
+                        <Card
+                          variant="bordered"
+                          css={{
+                            color: "white",
+                            opacity: "80%",
+                            fontFamily: "SF Pro Display",
+                            fontWeight: "300",
+                            fontSize: "30px",
+                            textShadow: "0px 0px 2px #000000",
+                            boxShadow: "0px 0px 4px #80282880",
+                            height: "60px",
+                          }}
+                        >
+                          <div>
+                            <Input
+                              type="text"
+                              size="$3xl"
+                              css={{
+                                fontFamily: "SF Pro Display",
+                                color: "white",
+                              }}
+                              className="number"
+                              color="default"
+                              placeholder="amount"
+                              id="from_amount"
+                              onChange={(e) => setHold(e.target.value)}
+                            />
+                          </div>
+                        </Card>
+                      </div>
+                      <div
+                        style={{
+                          position: "absolute",
+                          right: "7px",
+                          top: "3px",
                         }}
                       >
-                        <div>
-                          <Input
-                            type="text"
+                        <a onClick={modalWallet}>
+                          <Text
                             size="$3xl"
                             css={{
                               fontFamily: "SF Pro Display",
+                              textShadow: "0px 0px 1px #000000",
+                              fontWeight: "400",
                               color: "white",
+                              ml: "$10",
+                              fontSize: "17px",
+                              background: "#363636",
+                              paddingRight: "5px",
+                              borderRadius: "30px",
+                              padding: "6px 10px 0px 10px",
+                              marginTop: "6px",
+                              height: "45px",
                             }}
-                            className="number"
-                            color="default"
-                            placeholder="amount"
-                            id="from_amount"
-                            onChange={(e) => setHold(e.target.value)}
-                          />
-                        </div>
-                      </Card>
+                          >
+                            <img src={flogo} style={{ width: "20px" }} />
+                            <span style={{ fontSize: "20px" }}>
+                              {" " + fname}
+                            </span>
+                          </Text>
+                        </a>
+                      </div>
                     </div>
+                  <div className="img_pluss" style={{position:"absolute",top:"50px", right:"30px" }}>
+                    <img src="pluss.png" alt="" width={"40px"} style={{ background: "rgb(22, 24, 26)", borderRadius:"50%"}} />
+                  </div>
+                  </div>
+                  <div className="aroundGrid">
                     <div>
-                      <Card
-                        variant="bordered"
-                        css={{
-                          color: "white",
-                          opacity: "80%",
-                          fontFamily: "SF Pro Display",
-                          fontWeight: "300",
-                          fontSize: "30px",
-                          textShadow: "0px 0px 2px #000000",
-                          boxShadow: "0px 0px 4px #80282880",
-                          height: "60px",
+                      <div>
+                        <Card
+                          variant="bordered"
+                          css={{
+                            color: "white",
+                            opacity: "80%",
+                            fontFamily: "SF Pro Display",
+                            fontWeight: "300",
+                            fontSize: "30px",
+                            textShadow: "0px 0px 2px #000000",
+                            boxShadow: "0px 0px 4px #80282880",
+                            height: "60px",
+                          }}
+                        >
+                          <div>
+                            <Input
+                              type="text"
+                              size="$3xl"
+                              css={{
+                                fontFamily: "SF Pro Display",
+                                color: "white",
+                              }}
+                              className="number"
+                              color="default"
+                              placeholder="amount"
+                              id="from_amount"
+                              onChange={(e) => setHold(e.target.value)}
+                            />
+                          </div>
+                        </Card>
+                      </div>
+                      <div
+                        style={{
+                          position: "absolute",
+                          right: "7px",
+                          top: "3px",
                         }}
                       >
-                        <div>
-                          <Input
-                            type="text"
+                        <a onClick={fromHandler}>
+                          <Text
                             size="$3xl"
                             css={{
                               fontFamily: "SF Pro Display",
+                              textShadow: "0px 0px 1px #000000",
+                              fontWeight: "400",
                               color: "white",
+                              ml: "$10",
+                              fontSize: "17px",
+                              background: "#363636",
+                              paddingRight: "5px",
+                              borderRadius: "30px",
+                              padding: "6px 10px 0px 10px",
+                              marginTop: "6px",
+                              height: "45px",
                             }}
-                            className="number"
-                            color="default"
-                            placeholder="amount"
-                            id="from_amount"
-                            onChange={(e) => setHold(e.target.value)}
-                          />
-                        </div>
-                      </Card>
+                          >
+                            <img src={flogo} style={{ width: "20px" }} />
+                            <span style={{ fontSize: "20px" }}>
+                              {" " + fname}
+                            </span>
+                          </Text>
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
