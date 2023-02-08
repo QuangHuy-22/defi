@@ -1,14 +1,13 @@
-html{
-  background-image: linear-gradient(to right, #421e64, rgb(15, 5, 24));
+html {
+  background-image: linear-gradient(to bottom right,#034b75,#dc4225);
 }
 
 .container {
   padding-top: 2%;
   padding-bottom: 20%;
   height: 100vh;
-  background-image: linear-gradient(to right, #421e64, rgb(15, 5, 24));
+  background-image: linear-gradient(to bottom right,#034b75,#dc4225);
   display: block;
-  /* justify-content: center; */
 }
 .tuyem {
   max-width: 980px;
@@ -22,13 +21,13 @@ html{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 60px;
+  margin-bottom: 20px;
 }
 .module {
   margin: 0 auto;
   max-width: 570px;
   padding: 15px;
-  background-color: rgb(47, 33, 59);
+  background-color: rgb(22, 21, 34);
 }
 
 .headshot {
@@ -47,25 +46,30 @@ html{
 }
 
 .aroundGrid {
-  position: relative;
+  background-color: rgb(32, 34, 49);
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  color: #bfbfbf;
+  padding: 1.25rem;
+  border-radius: 8px;
 }
 
 input::placeholder {
   font-weight: bold;
   opacity: 0.5;
   font-family: "SF Pro Display";
-}
-.buttonSwapTo {
-  position: absolute;
-  right: 8px;
-  top: 2px;
+  padding: 5px;
 }
 
 .btn-grad {
-  /* background-image: linear-gradient( to right, #dc2424 0%, #4a569d 51%, #dc2424 100%  ); */
-  background-image: linear-gradient( to right, #dc2424 0%, #4a569d 51%, #dc2424 100%  );
+  background-image: linear-gradient(
+    to right,
+    #dc2424 0%,
+    #4a569d 51%,
+    #dc2424 100%
+  );
   margin: 10px;
-  /* padding: 15px 45px; */
   text-align: center;
   text-transform: uppercase;
   transition: 0.5s;
@@ -109,25 +113,10 @@ input::placeholder {
   font-family: SF Pro Display;
   font-size: 25px;
 }
-/* .pools {
-  padding: 0px 25px 0px 25px;
-  font-family: SF Pro Display;
-  font-size: 25px;
-} */
 
 .radio {
   display: none;
 }
-/* #tab1:checked ~ .panels #one-supp,
-#tab2:checked ~ .panels #two-supp {
-  display: block;
-} */
-/* #tab1:checked ~ .tabs #support,
-#tab2:checked ~ .tabs #hotline {
-  border-radius: 16px;
-  color: #fff;
-  font-weight: 500;
-} */
 
 .tabs {
   border-radius: 20px;
@@ -137,100 +126,84 @@ input::placeholder {
   grid-template-columns: 33.4% 33.4% 33.4%;
   padding: 5px;
 }
-/* #one:checked~.tabs #one-tab,
-    #two:checked~.tabs #two-tab,
-    #three:checked~.tabs #three-tab {
-        background: #CF3A3E;
-        color: #fff;
-        font-weight: 500;
-    } */
 
-    /* #tab1:checked~.tabs #support,
-    #tab2:checked~.tabs #hotline {
-      background-image: linear-gradient(
-        to right,
-        #dc2424 0%,
-        #4a569d 51%,
-        #dc2424 100%
-      );
-        border-radius: 8px;
-        font-weight: 500;
-    } */
-
-    .tablist {
-      grid-template-columns: 50% 50%;
-  }
-
-  /* #one:checked~.tabs #one-tab,
-    #two:checked~.tabs #two-tab,
-    #three:checked~.tabs #three-tab {
-        background: #CF3A3E;
-        border-radius: 8px;
-        color: #fff;
-        font-weight: 500;
-    } */
-    .tab {
-      cursor: pointer;
-      padding: 8px 0;
-      display: inline-block;
-      color: #808890;
-      text-align: center;
-  }
-  .panels {
-    width: 100%;
+.tablist {
+  grid-template-columns: 50% 50%;
 }
-/* #tab1:checked~.panels #one-supp,
-    #tab2:checked~.panels #two-supp {
-        display: block
-    } */
 
-    .panel {
-      display: none;
-      animation: fadein .8s;
-  }
+.tab {
+  cursor: pointer;
+  padding: 8px 0;
+  display: inline-block;
+  color: #808890;
+  text-align: center;
+}
+.panels {
+  width: 100%;
+}
 
-  /* #one:checked~.panels #one-panel,
-    #two:checked~.panels #two-panel,
-    #three:checked~.panels #three-panel {
-        display: block
-    }
+.panel {
+  display: none;
+  animation: fadein 0.8s;
+}
 
-    #tab1:checked~.panels #one-supp,
-    #tab2:checked~.panels #two-supp {
-        display: block
-    } */
-    #hotline{
-      display: none;
-    }
-    .swap .active{
-      background-image: linear-gradient(
-        to right,
-        #dc2424 0%,
-        #4a569d 51%,
-        #dc2424 100%
-      );
-      border-radius: 8px;
-    }
-    .active{
-      background-image: linear-gradient(
-        to right,
-        #dc2424 0%,
-        #4a569d 51%,
-        #dc2424 100%
-      );
-      border-radius: 8px;
-    }
-    .img_pluss{
-      position: absolute;
-      top: 50px;
-      right: 30px;
-      z-index: 9;
-      width: 50px;
-      display: flex;
-      height: 50px;
-      background: #363636;
-      border-radius: 50%;
-      border: solid 1px #000;
-      align-items: center;
-      justify-content: center;
-    }
+#hotline {
+  display: none;
+}
+.swap .active {
+  background-image: linear-gradient(
+    to right,
+    #dc2424 0%,
+    #4a569d 51%,
+    #dc2424 100%
+  );
+  border-radius: 8px;
+}
+.active {
+  background-image: linear-gradient(
+    to right,
+    #dc2424 0%,
+    #4a569d 51%,
+    #dc2424 100%
+  );
+  border-radius: 8px;
+}
+.img_pluss {
+  position: absolute;
+    top: 78px;
+    left: 20px;
+  width: 60px;
+  display: flex;
+  height: 60px;
+  background-color: rgb(32, 34, 49);
+  border-radius: 50%;
+  border: solid 1px #000;
+  align-items: center;
+  justify-content: center;
+}
+.aroundGridLiquid {
+  background-color: rgb(32, 34, 49);
+  margin-bottom: 45px;
+  display: flex;
+  justify-content: space-between;
+  color: #bfbfbf;
+  padding: 1.25rem;
+  border-radius: 8px;
+}
+.aroundGridToLiquid {
+  background-color: rgb(32, 34, 49);
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  color: #bfbfbf;
+  padding: 1.25rem;
+  border-radius: 8px;
+}
+.insildeInputSelect {
+  font-family: "SF Pro Display";
+  color: "white";
+  background-color: rgb(22, 21, 34);
+  border: 1px;
+  border-radius: 8px;
+  max-width: 300px;
+}
