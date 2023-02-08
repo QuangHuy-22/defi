@@ -24,9 +24,17 @@ import truncateEthAddress from "truncate-eth-address";
 export default function Defiswap() {
   const { visible, setVisible } = useModal();
   const [flogo, getFromLogo] = useState([]);
+  const [flogoliquid, getFromLogoLiquid] = useState([]);
+  const [tlogoliquid, getToLogoLiquid] = useState([]);
   const [fname, getFromName] = useState(["Swap From"]);
+  const [fnameliquid, getFromNameLiquid] = useState(["Select Token"]);
+  const [tnameliquid, getToNameLiquid] = useState(["Select Token"]);
   const [faddr, getFromAddr] = useState([]);
+  const [faddrliquid, getFromAddrLiquid] = useState([]);
+  const [taddrliquid, getToAddrLiquid] = useState([]);
   const [fdec, getFromDec] = useState([]);
+  const [fdecliquid, getFromDecLiquid] = useState([]);
+  const [tdecliquid, getToDecLiquid] = useState([]);
   const [tlogo, getToLogo] = useState([]);
   const [tname, getToName] = useState(["Swap To"]);
   const [taddr, getToAddr] = useState([]);
@@ -37,7 +45,11 @@ export default function Defiswap() {
   const [swap, setSwap] = useState(false);
   const [walletConnect, setWalletConnect] = useState(false);
   const [price, setPrice] = useState([]);
+  const [priceliquid, setPriceLiquid] = useState([]);
+  const [priceliquidto, setPriceLiquidTo] = useState([]);
   const [orders, setOrder] = useState([]);
+  const [ordersliquid, setOrderLiquid] = useState([]);
+  const [ordersliquidto, setOrderLiquidTo] = useState([]);
 
   const config = {
     apiKey: "6vk4ND2nxNThz8mY_RnIjbaiq7TeETMJ",
@@ -55,6 +67,22 @@ export default function Defiswap() {
     getFromDec,
     setPrice,
     setOrder,
+  ]);
+  useEffect(() => {}, [
+    getFromLogoLiquid,
+    getFromNameLiquid,
+    getFromAddrLiquid,
+    getFromDecLiquid,
+    setPriceLiquid,
+    setOrderLiquid,
+  ]);
+  useEffect(() => {}, [
+    getToLogoLiquid,
+    getToNameLiquid,
+    getToAddrLiquid,
+    getToDecLiquid,
+    setPriceLiquidTo,
+    setOrderLiquidTo,
   ]);
 
   useEffect(() => {}, [getToLogo, getToName, getToAddr]);
@@ -79,27 +107,46 @@ export default function Defiswap() {
       currentSelectSide = side;
       listFromTokens();
     } else {
-      sendAlert();
+      modalWallet();
     }
   };
-  const fromToken = (side) => {
+  const fromHandlerLiquid = (side) => {
     if (wallet.includes("0x")) {
       setVisible(true);
       currentSelectSide = side;
       listFromLiquidTokens();
     } else {
-      sendAlert();
+      modalWallet();
     }
   };
-  const toToken = (side) => {
+  const fromHandlerLiquidTo = (side) => {
     if (wallet.includes("0x")) {
       setVisible(true);
       currentSelectSide = side;
-      listFromTokens();
+      listToLiquidTokens();
     } else {
-      sendAlert();
+      modalWallet();
     }
   };
+
+  // const fromToken = (side) => {
+  //   if (wallet.includes("0x")) {
+  //     setVisible(true);
+  //     currentSelectSide = side;
+  //     listFromLiquidTokens();
+  //   } else {
+  //     sendAlert();
+  //   }
+  // };
+  // const toToken = (side) => {
+  //   if (wallet.includes("0x")) {
+  //     setVisible(true);
+  //     currentSelectSide = side;
+  //     listFromTokens();
+  //   } else {
+  //     sendAlert();
+  //   }
+  // };
 
   const toHandler = (side) => {
     setVisible(true);
@@ -180,8 +227,6 @@ export default function Defiswap() {
     document.getElementById("sell_value").innerHTML = sell;
     document.getElementById("estimate_gas").innerHTML =
       swapPriceJSON.estimatedGas;
-    console.log(swapPriceJSON);
-    console.log(swapOrders);
   }
 
   async function listFromTokens() {
@@ -213,11 +258,30 @@ export default function Defiswap() {
       div.className = "token_row";
       let html = `
           <img className="token_list_img" width="12%" src="${tokens[i].logoURI}">
+            <span className="token_list_text" size="15px">${tokens[i].symbol}</span>
+            `;
+      div.innerHTML = html;
+      div.onclick = () => {
+        selectFromLiquid(tokens[i]);
+      };
+      parent.appendChild(div);
+    }
+  }
+  async function listToLiquidTokens() {
+    let response = await fetch("http://localhost:3000/api/tokens");
+    let tokenListJSON = await response.json();
+    var tokens = tokenListJSON.tokens;
+    let parent = document.getElementById("token_list");
+    for (const i in tokens) {
+      let div = document.createElement("div");
+      div.className = "token_row";
+      let html = `
+          <img className="token_list_img" width="12%" src="${tokens[i].logoURI}">
             <span className="token_list_text">${tokens[i].symbol}</span>
             `;
       div.innerHTML = html;
       div.onclick = () => {
-        selectFrom(tokens[i]);
+        selectToLiquid(tokens[i]);
       };
       parent.appendChild(div);
     }
@@ -234,6 +298,30 @@ export default function Defiswap() {
     getFromLogo(fromLogo);
     getFromAddr(fromAddr);
     getFromDec(fromDec);
+  }
+  function selectFromLiquid(token) {
+    currentTrade[currentSelectSide] = token;
+    closeHandler();
+    var fromName = token.name;
+    var fromLogo = token.logoURI;
+    var fromAddr = token.address;
+    var fromDec = token.decimals;
+    getFromNameLiquid(fromName);
+    getFromLogoLiquid(fromLogo);
+    getFromAddrLiquid(fromAddr);
+    getFromDecLiquid(fromDec);
+  }
+  function selectToLiquid(token) {
+    currentTrade[currentSelectSide] = token;
+    closeHandler();
+    var fromName = token.name;
+    var fromLogo = token.logoURI;
+    var fromAddr = token.address;
+    var fromDec = token.decimals;
+    getToNameLiquid(fromName);
+    getToLogoLiquid(fromLogo);
+    getToAddrLiquid(fromAddr);
+    getToDecLiquid(fromDec);
   }
 
   async function displayBalance() {
@@ -319,7 +407,7 @@ export default function Defiswap() {
     }
     var rawvalue = swapOrders.buyAmount / 10 ** tdec;
     var value = rawvalue.toFixed(2);
-    document.getElementById("to_amount").innerHTML = value;
+    document.getElementById("to_amount").value = value;
     document.getElementById("gas_estimate").innerHTML =
       swapPriceJSON.estimatedGas;
   }
@@ -368,11 +456,9 @@ export default function Defiswap() {
   }
 
   async function onSwap(e) {
-    console.log(e.currentTarget.className);
-    console.log(e.currentTarget.title);
-    const name = e.currentTarget.title
+    const name = e.currentTarget.title;
     var i;
-    const tabcontent = document.getElementsByClassName("tabcontent")
+    const tabcontent = document.getElementsByClassName("tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
       tabcontent[i].style.display = "none";
     }
@@ -537,7 +623,7 @@ export default function Defiswap() {
         <div className="module headshot glow">
           <div
             style={{
-              marginBottom: "15px",
+              marginBottom: "10px",
               fontSize: "30px",
               textRendering: "geometricPrecision",
               fontFamily: "SF Pro Display",
@@ -550,15 +636,25 @@ export default function Defiswap() {
               <div
                 style={{
                   display: "flex",
-                  background: "#16181A",
+                  backgroundColor: "rgb(32, 34, 49)",
                   borderRadius: "8px",
                   maxWidth: "250px",
                 }}
               >
-                <label title="support" for="tab1" className="tablinks active"  onClick={onSwap}>
+                <label
+                  title="support"
+                  for="tab1"
+                  className="tablinks active"
+                  onClick={onSwap}
+                >
                   Swap
                 </label>
-                <label title="hotline" for="tab2" className="tablinks"  onClick={onSwap}>
+                <label
+                  title="hotline"
+                  for="tab2"
+                  className="tablinks"
+                  onClick={onSwap}
+                >
                   Liquidity
                 </label>
               </div>
@@ -570,69 +666,27 @@ export default function Defiswap() {
                     <div>
                       <div justify="center">
                         <div className="aroundGrid">
-                          <div>
-                            <div>
-                              <Card
-                                variant="bordered"
-                                css={{
-                                  color: "white",
-                                  opacity: "80%",
-                                  fontFamily: "SF Pro Display",
-                                  fontWeight: "300",
-                                  fontSize: "30px",
-                                  textShadow: "0px 0px 2px #000000",
-                                  boxShadow: "0px 0px 4px #80282880",
-                                  height: "60px",
-                                }}
-                              >
-                                <div>
-                                  <Input
-                                    type="text"
-                                    size="$3xl"
-                                    css={{
-                                      fontFamily: "SF Pro Display",
-                                      color: "white",
-                                    }}
-                                    className="number"
-                                    color="default"
-                                    placeholder="amount"
-                                    id="from_amount"
-                                    onChange={(e) => setHold(e.target.value)}
-                                  />
-                                </div>
-                              </Card>
-                            </div>
-                            <div
-                              style={{
-                                position: "absolute",
-                                right: "7px",
-                                top: "3px",
-                              }}
-                            >
-                              <a onClick={fromHandler}>
-                                <Text
-                                  size="$3xl"
-                                  css={{
-                                    fontFamily: "SF Pro Display",
-                                    textShadow: "0px 0px 1px #000000",
-                                    fontWeight: "400",
-                                    color: "white",
-                                    ml: "$10",
-                                    fontSize: "17px",
-                                    background: "#363636",
-                                    paddingRight: "5px",
-                                    borderRadius: "30px",
-                                    padding: "6px 10px 0px 10px",
-                                    marginTop: "6px",
-                                    height: "45px",
-                                  }}
+                          <div className="buttonSelect">
+                            <a onClick={fromHandler}>
+                              <div>
+                                <img src={flogo} style={{ width: "20px" }} />
+                                <span
+                                  style={{ fontSize: "20px", color: "#BFBFBF" }}
                                 >
-                                  <img src={flogo} style={{ width: "20px" }} />
-                                  <span style={{ fontSize: "20px" }}>
-                                    {" " + fname}
-                                  </span>
-                                </Text>
-                              </a>
+                                  {" " + fname}
+                                </span>
+                              </div>
+                            </a>
+                          </div>
+                          <div className="inputSelect">
+                            <div>
+                              <input
+                                type="text"
+                                className="insildeInputSelect"
+                                placeholder="amount"
+                                id="from_amount"
+                                onChange={(e) => setHold(e.target.value)}
+                              />
                             </div>
                           </div>
                         </div>
@@ -664,7 +718,7 @@ export default function Defiswap() {
                         </Button>
                       </Modal.Footer>
                     </Modal>
-                    <div>
+                    <div className="balance">
                       <Row>
                         <Text
                           css={{
@@ -689,78 +743,27 @@ export default function Defiswap() {
                     <Row justify="center">
                       <img src="arrow.png" width={"3%"} />
                     </Row>
-                    <div className="22222">
-                      <div justify="center">
-                        <div
-                          className="aroundSwapTo"
-                          style={{
-                            display: "flex",
-                            position: "relative",
-                          }}
-                        >
+                    <div className="aroundGrid">
+                      <div className="buttonSelect">
+                        <a onClick={toHandler}>
                           <div>
-                            <Card
-                              variant="bordered"
-                              style={{
-                                height: "58px",
-                                width: "532px",
-                              }}
-                              css={{
-                                color: "white",
-                                opacity: "80%",
-                                fontFamily: "SF Pro Display",
-                                fontWeight: "300",
-                                fontSize: "30px",
-                                textShadow: "0px 0px 2px #000000",
-                                boxShadow: "0px 0px 4px #80282880",
-                                height: "60px",
-                              }}
+                            <img src={tlogo} style={{ width: "20px" }} />
+                            <span
+                              style={{ fontSize: "20px", color: "#BFBFBF" }}
                             >
-                              <Col>
-                                <Text
-                                  type="text"
-                                  size="$4xl"
-                                  css={{
-                                    fontFamily: "SF Pro Display",
-                                    color: "white",
-                                    textShadow: "0px 0px 3px #39FF14",
-                                    ml: "$2",
-                                  }}
-                                  className="number"
-                                  color="default"
-                                  id="to_amount"
-                                />
-                              </Col>
-                            </Card>
+                              {" " + tname}
+                            </span>
                           </div>
-                          <Spacer />
-                          <div className="buttonSwapTo">
-                            <a onClick={toHandler}>
-                              <Text
-                                size="$3xl"
-                                css={{
-                                  fontFamily: "SF Pro Display",
-                                  textShadow: "0px 0px 1px #000000",
-                                  fontWeight: "400",
-                                  color: "white",
-                                  ml: "$10",
-                                  fontSize: "15px",
-                                  background: "#363636",
-                                  paddingRight: "5px",
-                                  borderRadius: "30px",
-                                  padding: "4px 18px 0px 18px",
-                                  marginTop: "5px",
-                                  height: "45px",
-                                }}
-                              >
-                                <img src={tlogo} style={{ width: "20px" }} />
-                                <span style={{ fontSize: "20px" }}>
-                                  {" " + tname}
-                                </span>
-                              </Text>
-                            </a>
+                        </a>
+                      </div>
+                      <div className="inputSelect">
+                          <div>
+                            <input
+                              type="text"
+                              className="insildeInputSelect"
+                              id="to_amount"
+                            />
                           </div>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -832,8 +835,7 @@ export default function Defiswap() {
                     </div>
                     <div
                       style={{
-                        marginTop: "20px",
-                        marginBottom: "20px",
+                        marginTop: "10px",
                       }}
                     >
                       <Card
@@ -1197,143 +1199,88 @@ export default function Defiswap() {
                 </div>
               </div>
               <div class="tabcontent" id="hotline">
-                <div class="add_liquidity box-cskh bgfff pad16 row mb-8" style={{position:"relative"}} >
-                  <div className="aroundGrid" style={{marginBottom:"25px",}} >
-                    <div>
+                <div
+                  class="add_liquidity box-cskh bgfff pad16 row mb-8"
+                  style={{ position: "relative" }}
+                >
+                  <div
+                    className="aroundGridLiquid"
+                    style={{ marginBottom: "25px" }}
+                  >
+                    <div className="buttonSelect">
+                      <a onClick={fromHandlerLiquid}>
+                        <div>
+                          <img src={flogoliquid} style={{ width: "30px" }} />
+                          <span style={{ fontSize: "20px", color: "#BFBFBF" }}>
+                            {" " + fnameliquid}
+                          </span>
+                        </div>
+                      </a>
+                    </div>
+                    <div className="inputSelect">
                       <div>
-                        <Card
-                          variant="bordered"
-                          css={{
-                            color: "white",
-                            opacity: "80%",
-                            fontFamily: "SF Pro Display",
-                            fontWeight: "300",
-                            fontSize: "30px",
-                            textShadow: "0px 0px 2px #000000",
-                            boxShadow: "0px 0px 4px #80282880",
-                            height: "60px",
-                          }}
-                        >
-                          <div>
-                            <Input
-                              type="text"
-                              size="$3xl"
-                              css={{
-                                fontFamily: "SF Pro Display",
-                                color: "white",
-                              }}
-                              className="number"
-                              color="default"
-                              placeholder="amount"
-                              id="from_amount"
-                              onChange={(e) => setHold(e.target.value)}
-                            />
-                          </div>
-                        </Card>
-                      </div>
-                      <div
-                        style={{
-                          position: "absolute",
-                          right: "7px",
-                          top: "3px",
-                        }}
-                      >
-                        <a onClick={fromToken}>
-                          <Text
-                            size="$3xl"
-                            css={{
-                              fontFamily: "SF Pro Display",
-                              textShadow: "0px 0px 1px #000000",
-                              fontWeight: "400",
-                              color: "white",
-                              ml: "$10",
-                              fontSize: "17px",
-                              background: "#363636",
-                              paddingRight: "5px",
-                              borderRadius: "30px",
-                              padding: "6px 10px 0px 10px",
-                              marginTop: "6px",
-                              height: "45px",
-                            }}
-                          >
-                            <img src={flogo} style={{ width: "20px" }} />
-                            <span style={{ fontSize: "20px" }}>
-                              {" " + fname}
-                            </span>
-                          </Text>
-                        </a>
+                        <input
+                          type="text"
+                          className="insildeInputSelect"
+                          placeholder="0.0"
+                          id="from_amount"
+                          // onChange={(e) => setHold(e.target.value)}
+                        />
                       </div>
                     </div>
-                  <div className="img_pluss" style={{position:"absolute",top:"50px", right:"30px", zIndex:"9" }}>
-                    <img src="pluss.png" alt="" style={{ maxWidth: "30px"}} />
                   </div>
+                  <div className="img_pluss">
+                    <img src="pluss.png" alt="" style={{ maxWidth: "30px" }} />
                   </div>
-                  <div className="aroundGrid">
-                    <div>
+                  <div className="aroundGridToLiquid">
+                    <div className="buttonSelect">
+                      <a onClick={fromHandlerLiquidTo}>
+                        <div>
+                          <img src={tlogoliquid} style={{ width: "25px" }} />
+                          <span style={{ fontSize: "20px", color: "#BFBFBF" }}>
+                            {" " + tnameliquid}
+                          </span>
+                        </div>
+                      </a>
+                    </div>
+                    <div className="inputSelect">
                       <div>
-                        <Card
-                          variant="bordered"
-                          css={{
-                            color: "white",
-                            opacity: "80%",
-                            fontFamily: "SF Pro Display",
-                            fontWeight: "300",
-                            fontSize: "30px",
-                            textShadow: "0px 0px 2px #000000",
-                            boxShadow: "0px 0px 4px #80282880",
-                            height: "60px",
-                          }}
-                        >
-                          <div>
-                            <Input
-                              type="text"
-                              size="$3xl"
-                              css={{
-                                fontFamily: "SF Pro Display",
-                                color: "white",
-                              }}
-                              className="number"
-                              color="default"
-                              placeholder="amount"
-                              id="from_amount"
-                              onChange={(e) => setHold(e.target.value)}
-                            />
-                          </div>
-                        </Card>
-                      </div>
-                      <div
-                        style={{
-                          position: "absolute",
-                          right: "7px",
-                          top: "3px",
-                        }}
-                      >
-                        <a onClick={fromHandler}>
-                          <Text
-                            size="$3xl"
-                            css={{
-                              fontFamily: "SF Pro Display",
-                              textShadow: "0px 0px 1px #000000",
-                              fontWeight: "400",
-                              color: "white",
-                              ml: "$10",
-                              fontSize: "17px",
-                              background: "#363636",
-                              paddingRight: "5px",
-                              borderRadius: "30px",
-                              padding: "6px 10px 0px 10px",
-                              marginTop: "6px",
-                              height: "45px",
-                            }}
-                          >
-                            <img src={flogo} style={{ width: "20px" }} />
-                            <span style={{ fontSize: "20px" }}>
-                              {" " + fname}
-                            </span>
-                          </Text>
-                        </a>
+                        <input
+                          type="text"
+                          placeholder="0.0"
+                          className="insildeInputSelect"
+                          id="from_amount"
+                          // onChange={(e) => setHold(e.target.value)}
+                        />
                       </div>
                     </div>
+                  </div>
+                  <div
+                    style={{
+                      marginTop: "10px",
+                    }}
+                  >
+                    <Card
+                      isPressable
+                      className="btn-grad"
+                      // onPress={swapToken}
+                      style={{
+                        margin: "0 auto",
+                        maxWidth: "165px",
+                      }}
+                    >
+                      <Text
+                        css={{
+                          display: "flex",
+                          justifyContent: "center",
+                          textShadow: "0px 0px 2px #000000",
+                        }}
+                        size="$3xl"
+                        weight="bold"
+                      >
+                        Approve !
+                      </Text>
+                    </Card>
                   </div>
                 </div>
               </div>
