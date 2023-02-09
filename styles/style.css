@@ -7,7 +7,7 @@ html {
   padding-bottom: 20%;
   height: 100vh;
   background-image: linear-gradient(to bottom right,#034b75,#dc4225);
-  display: block;
+  /* display: block; */
 }
 .tuyem {
   max-width: 980px;
@@ -207,3 +207,9 @@ input::placeholder {
   border-radius: 8px;
   max-width: 300px;
 }
+.Row{
+  display: flex;
+  justify-content: space-between;
+}
+
+/* height: 720 */
