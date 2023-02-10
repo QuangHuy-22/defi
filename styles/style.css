@@ -198,6 +198,7 @@ input::placeholder {
   color: #bfbfbf;
   padding: 1.25rem;
   border-radius: 8px;
+  position: relative;
 }
 .insildeInputSelect {
   font-family: "SF Pro Display";
