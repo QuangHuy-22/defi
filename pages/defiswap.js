@@ -20,6 +20,8 @@ import Erc20 from "../engine/erc20.json";
 import { ethers } from "ethers";
 import { Alchemy, Network } from "alchemy-sdk";
 import truncateEthAddress from "truncate-eth-address";
+import Swal from "sweetalert2";
+import { set } from "nprogress";
 
 export default function Defiswap() {
   const { visible, setVisible } = useModal();
@@ -45,7 +47,6 @@ export default function Defiswap() {
   const [alert, setAlert] = useState(false);
   const [swap, setSwap] = useState(false);
   const [modalLiquid, setModalLiquid] = useState(false);
-  const [errorSelectToken, setErrorSelectToken] = useState(false);
   const [walletConnect, setWalletConnect] = useState(false);
   const [price, setPrice] = useState([]);
   const [priceliquid, setPriceLiquid] = useState([]);
@@ -53,6 +54,9 @@ export default function Defiswap() {
   const [orders, setOrder] = useState([]);
   const [ordersliquid, setOrderLiquid] = useState([]);
   const [ordersliquidto, setOrderLiquidTo] = useState([]);
+  const [listLiquid, setListLiquid] = useState([
+    { fName: "", fLogo: "", fValue: "", tName: "", tLogo: "", tValue: "" },
+  ]);
 
   const config = {
     apiKey: "6vk4ND2nxNThz8mY_RnIjbaiq7TeETMJ",
@@ -71,14 +75,7 @@ export default function Defiswap() {
     setPrice,
     setOrder,
   ]);
-  useEffect(() => {}, [
-    getFromLogoLiquid,
-    getFromNameLiquid,
-    getFromAddrLiquid,
-    getFromDecLiquid,
-    setPriceLiquid,
-    setOrderLiquid,
-  ]);
+
   useEffect(() => {}, [
     getToLogoLiquid,
     getToNameLiquid,
@@ -89,6 +86,7 @@ export default function Defiswap() {
   ]);
 
   useEffect(() => {}, [getToLogo, getToName, getToAddr]);
+  useEffect(() => {}, [getToLogoLiquid, getToName, getToAddr]);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -110,7 +108,6 @@ export default function Defiswap() {
   let toSelectSide = null;
 
   const sendAlert = () => setAlert(true);
-  const sendErrorSelect = () => setErrorSelectToken(true);
 
   const fromHandler = (side) => {
     if (wallet.includes("0x")) {
@@ -140,7 +137,6 @@ export default function Defiswap() {
     }
   };
 
-
   const toHandler = (side) => {
     setVisible(true);
     toSelectSide = side;
@@ -156,8 +152,7 @@ export default function Defiswap() {
     setAlert(false);
     setSwap(false);
     setWalletConnect(false);
-    setErrorSelectToken(false)
-    setModalLiquid(false)
+    setModalLiquid(false);
     console.log("closed");
   };
 
@@ -186,67 +181,93 @@ export default function Defiswap() {
     closeHandler();
   }
 
-  
-
-
   async function swapToken() {
-    setSwap(true);
-    if (!faddr || !taddr || !document.getElementById("from_amount").value)
-      return;
+    const spanToLiquid = document.getElementById("get_balance").innerHTML;
+    const spanFromLiquid = document.getElementById("get_balance").innerHTML;
+    const spanToSplit = spanToLiquid.split(" ");
+    const spanFromSplit = spanFromLiquid.split(" ");
+    if (Number(spanToSplit[1]) && Number(spanFromSplit[1]) > 0) {
+      setSwap(true);
+      if (!faddr || !taddr || !document.getElementById("from_amount").value)
+        return;
       let amount = Number(
         document.getElementById("from_amount").value * 10 ** fdec
-        );
-    const params = {
-      sellToken: faddr,
-      buyToken: taddr,
-      sellAmount: amount,
-    };
-    const response = await fetch(
-      zeroxapi + `/swap/v1/price?${qs.stringify(params)}`
-    );
-    const sources = await fetch(
-      zeroxapi + `/swap/v1/quote?${qs.stringify(params)}`
-    );
-    var swapPriceJSON = await response.json();
-    var swapOrders = await sources.json();
-    try {
-      await swapOrders.orders.find((item) => {
-        document.getElementById("liquid_provider").innerHTML = item.source;
-      });
-    } catch (error) {
-      document.getElementById("liquid_provider").innerHTML =
-        "Pool Not Available";
-    }
-    var rawvalue = swapOrders.buyAmount / 10 ** tdec;
-    var value = rawvalue.toFixed(2);
-    var sellvalue = swapOrders.sellAmount / 10 ** fdec;
-    var sell = sellvalue.toFixed(2);
-    document.getElementById("raw").innerHTML = value;
-    document.getElementById("minimum_reveived").innerHTML = value;
-    document.getElementById("sell_value").innerHTML = sell;
-    document.getElementById("estimate_gas").innerHTML =
-      swapPriceJSON.estimatedGas;
+      );
+      const params = {
+        sellToken: faddr,
+        buyToken: taddr,
+        sellAmount: amount,
+      };
+      const response = await fetch(
+        zeroxapi + `/swap/v1/price?${qs.stringify(params)}`
+      );
+      const sources = await fetch(
+        zeroxapi + `/swap/v1/quote?${qs.stringify(params)}`
+      );
+      var swapPriceJSON = await response.json();
+      var swapOrders = await sources.json();
+      try {
+        await swapOrders.orders.find((item) => {
+          document.getElementById("liquid_provider").innerHTML = item.source;
+        });
+      } catch (error) {
+        document.getElementById("liquid_provider").innerHTML =
+          "Pool Not Available";
+      }
+      var rawvalue = swapOrders.buyAmount / 10 ** tdec;
+      var value = rawvalue.toFixed(2);
+      var sellvalue = swapOrders.sellAmount / 10 ** fdec;
+      var sell = sellvalue.toFixed(2);
+      document.getElementById("raw").innerHTML = value;
+      document.getElementById("minimum_reveived").innerHTML = value;
+      document.getElementById("sell_value").innerHTML = sell;
+      document.getElementById("estimate_gas").innerHTML =
+        swapPriceJSON.estimatedGas;
+    } else errorBalance();
+  }
+  async function errorBalance() {
+    Swal.fire({
+      title: "No token balance",
+      icon: "error",
+      confirmButtonText: "Cool",
+    });
+  }
+  async function successAddLiquid() {
+    Swal.fire({
+      icon: "success",
+      title: "Add Liquidity Successful",
+      showConfirmButton: true,
+      timer: 5500,
+    });
   }
 
-  async function approve(){
-    setModalLiquid(true)
-    const delayDebounce = setTimeout(() => {
-      checkIt();
-    }, 200);
-    
-  }
-  
-  async function checkIt(){
-    const fromToken = document.getElementById("from_liquid").value
-    const toToken = document.getElementById("to_liquid").value
-    document.getElementById("fromToken").innerHTML = fromToken
-    document.getElementById("toToken").innerHTML = toToken
-    const per1 = toToken/fromToken
-    const per2 = fromToken/toToken
-      document.getElementById("toTokenLiquid").innerHTML = per1.toFixed(2)
-      document.getElementById("fromTokenLiquid").innerHTML = per2.toFixed(2)
+  async function approve() {
+    const spanToLiquid = document.getElementById(
+      "get_balance_to_liquid"
+    ).innerHTML;
+    const spanFromLiquid = document.getElementById(
+      "get_balance_from_liquid"
+    ).innerHTML;
+    const spanToSplit = spanToLiquid.split(" ");
+    const spanFromSplit = spanFromLiquid.split(" ");
+    if (Number(spanToSplit[1]) && Number(spanFromSplit[1]) > 0) {
+      setModalLiquid(true);
+      const delayDebounce = setTimeout(() => {
+        checkIt();
+      }, 200);
+    } else errorBalance();
   }
 
+  async function checkIt() {
+    const fromToken = document.getElementById("from_liquid").value;
+    const toToken = document.getElementById("to_liquid").value;
+    document.getElementById("fromToken").innerHTML = fromToken;
+    document.getElementById("toToken").innerHTML = toToken;
+    const per1 = toToken / fromToken;
+    const per2 = fromToken / toToken;
+    document.getElementById("toTokenLiquid").innerHTML = per1.toFixed(2);
+    document.getElementById("fromTokenLiquid").innerHTML = per2.toFixed(2);
+  }
 
   async function listFromTokens() {
     let response = await fetch("http://localhost:3000/api/tokens");
@@ -317,6 +338,7 @@ export default function Defiswap() {
     getFromLogo(fromLogo);
     getFromAddr(fromAddr);
     getFromDec(fromDec);
+    displayBalance(fromAddr);
   }
   function selectFromLiquid(token) {
     currentTrade[currentSelectSide] = token;
@@ -325,10 +347,11 @@ export default function Defiswap() {
     var fromLogo = token.logoURI;
     var fromAddr = token.address;
     var fromDec = token.decimals;
+    getFromAddrLiquid(fromAddr);
     getFromNameLiquid(fromName);
     getFromLogoLiquid(fromLogo);
-    getFromAddrLiquid(fromAddr);
     getFromDecLiquid(fromDec);
+    displayBalanceFromLiquid(fromAddr);
   }
   function selectToLiquid(token) {
     currentTrade[currentSelectSide] = token;
@@ -341,26 +364,83 @@ export default function Defiswap() {
     getToLogoLiquid(fromLogo);
     getToAddrLiquid(fromAddr);
     getToDecLiquid(fromDec);
+    displayBalanceToLiquid(fromAddr);
   }
 
-  async function displayBalance() {
-    const tokenContractAddresses = [faddr];
+  async function displayBalance(addr) {
+    const tokenContractAddresses = [addr];
     const data = await alchemy.core.getTokenBalances(
       wallet,
       tokenContractAddresses
     );
     data.tokenBalances.find((item) => {
       let rawbalance = parseInt(item.tokenBalance, 16).toString();
-      let formatbalance = Number(Web3.utils.fromWei(rawbalance));
-      console.log("huy:",Number(Web3.utils.fromWei(rawbalance)));
+      let formatbalance = Number(
+        Web3.utils.fromWei(rawbalance) * 1000000000000
+      );
+      console.log(
+        "huy:",
+        Number(Web3.utils.fromWei(rawbalance)) * 1000000000000
+      );
       let balance = formatbalance.toFixed(2);
       if (
         item.tokenBalance ===
         "0x0000000000000000000000000000000000000000000000000000000000000000"
       ) {
-        document.getElementById("get_balance").innerHTML = "0.00";
+        document.getElementById("get_balance").innerHTML = "Balance: 0.00";
       } else {
-        document.getElementById("get_balance").innerHTML = balance;
+        document.getElementById("get_balance").innerHTML =
+          "Balance: " + balance;
+      }
+    });
+  }
+
+  async function displayBalanceFromLiquid(addr) {
+    const tokenContractAddresses = [addr];
+    const data = await alchemy.core.getTokenBalances(
+      wallet,
+      tokenContractAddresses
+    );
+    data.tokenBalances.find((item) => {
+      let rawbalance = parseInt(item.tokenBalance, 16).toString();
+      let formatbalance = Number(
+        Web3.utils.fromWei(rawbalance) * 1000000000000
+      );
+      console.log("formatbalance1:", formatbalance);
+      let balance = formatbalance.toFixed(2);
+      if (
+        item.tokenBalance ===
+        "0x0000000000000000000000000000000000000000000000000000000000000000"
+      ) {
+        document.getElementById("get_balance_from_liquid").innerHTML =
+          "Balance: 0.00";
+      } else {
+        document.getElementById("get_balance_from_liquid").innerHTML =
+          "Balance: " + balance;
+      }
+    });
+  }
+  async function displayBalanceToLiquid(addr) {
+    const tokenContractAddresses = [addr];
+    const data = await alchemy.core.getTokenBalances(
+      wallet,
+      tokenContractAddresses
+    );
+    data.tokenBalances.find((item) => {
+      let rawbalance = parseInt(item.tokenBalance, 16).toString();
+      let formatbalance = Number(
+        Web3.utils.fromWei(rawbalance) * 1000000000000
+      );
+      let balance = formatbalance.toFixed(2);
+      if (
+        item.tokenBalance ===
+        "0x0000000000000000000000000000000000000000000000000000000000000000"
+      ) {
+        document.getElementById("get_balance_to_liquid").innerHTML =
+          "Balance: 0.00";
+      } else {
+        document.getElementById("get_balance_to_liquid").innerHTML =
+          "Balance: " + balance;
       }
     });
   }
@@ -396,22 +476,20 @@ export default function Defiswap() {
     getToLogo(toLogo);
     getToAddr(toAddr);
     getToDec(toDec);
-    displayBalance();
   }
-  async function getValue(){
+  async function getValue() {
     console.log("Getting Value");
-    const fromLiquid = document.getElementById("from_liquid").value
-    const toLiquid = document.getElementById("to_liquid").value
-    const per1 = toLiquid/fromLiquid
-    const per2 = fromLiquid/toLiquid
+    const fromLiquid = document.getElementById("from_liquid").value;
+    const toLiquid = document.getElementById("to_liquid").value;
+    const per1 = toLiquid / fromLiquid;
+    const per2 = fromLiquid / toLiquid;
     if (fromLiquid && toLiquid) {
-      document.getElementById("to_from").innerHTML = per1.toFixed(2)
-      document.getElementById("from_to").innerHTML = per2.toFixed(2)
-      document.getElementById("fromPerTo").innerHTML = "100%"
+      document.getElementById("to_from").innerHTML = per1.toFixed(2);
+      document.getElementById("from_to").innerHTML = per2.toFixed(2);
+      document.getElementById("fromPerTo").innerHTML = "100%";
     }
-    console.log("from:", fromLiquid / toLiquid);
-    console.log("to:", toLiquid);
   }
+
   async function getPrice() {
     console.log("Getting Price");
     if (!faddr || !taddr || !document.getElementById("from_amount").value)
@@ -439,6 +517,7 @@ export default function Defiswap() {
     } catch (error) {
       document.getElementById("defisource").innerHTML = "Pool Not Available";
     }
+    checkToken();
     var rawvalue = swapOrders.buyAmount / 10 ** tdec;
     var value = rawvalue.toFixed(2);
     document.getElementById("to_amount").value = value;
@@ -487,8 +566,78 @@ export default function Defiswap() {
     });
     console.log(ethereum);
     closeHandler();
+    successSwap();
   }
 
+  async function successSwap() {
+    Swal.fire({
+      icon: "success",
+      title: "Successful Transaction",
+      showConfirmButton: true,
+      timer: 5500,
+    });
+  }
+
+  async function confirmAdding() {
+    const valueTokenFrom = document.getElementById("from_liquid").value;
+    const valueTokenTo = document.getElementById("to_liquid").value;
+    const data = {
+      fName: fnameliquid,
+      fLogo: flogoliquid,
+      fValue: valueTokenFrom,
+      tName: tnameliquid,
+      tLogo: tlogoliquid,
+      tValue: valueTokenTo,
+    };
+    if (valueTokenTo && valueTokenFrom) {
+      if (listLiquid.length != 0) {
+        pushData(data);
+      }
+    }
+  }
+
+  async function pushData(data) {
+    listLiquid.push(data);
+    console.log("listLiquid", listLiquid);
+    setLocal();
+    closeHandler();
+    successAddLiquid();
+  }
+  async function setLocal() {
+    localStorage.setItem("data_liquid", JSON.stringify(listLiquid));
+  }
+
+  async function checkToken() {
+    const fromValue = document.getElementById("from_amount").value
+    const toValue = document.getElementById("to_amount").value
+    console.log("fromValue:", fromValue);
+    console.log("toValue:", toValue);
+    const data_liquid = localStorage.getItem("data_liquid");
+    const checkData = JSON.parse(data_liquid).find(
+      (c) => c.fName == fname && c.tName == tname
+    );
+    console.log(checkData);
+    if (checkData) {
+      if(checkData.fValue >= fromValue && checkData.tValue >= toValue)
+      document.getElementById("lqHotpot").style.display = "block";
+      else {
+        document.getElementById("lqHotpot").style.display = "none";
+        document.getElementById("hotpotLiquid").style.display = "none";
+        document.getElementById("defisource").style.display = "flex";
+      }
+    }
+  }
+  async function checkSwitch() {
+    const flag = document.getElementById("checkSwitch").checked
+    if (flag) {
+      document.getElementById("hotpotLiquid").style.display = "flex";
+      document.getElementById("defisource").style.display = "none";
+    }
+    else {
+      document.getElementById("hotpotLiquid").style.display = "none";
+      document.getElementById("defisource").style.display = "flex";
+    }
+  }
   async function onSwap(e) {
     const name = e.currentTarget.title;
     var i;
@@ -515,7 +664,7 @@ export default function Defiswap() {
               display: "flex",
               alignItems: "center",
             }}
-            onClick={sendErrorSelect}
+            onClick={checkToken}
           >
             <img src="logo.png" width={"50%"} />
           </div>
@@ -529,13 +678,18 @@ export default function Defiswap() {
             >
               <Text
                 css={{ color: "white" }}
-                size={16}
+                size={15}
                 weight="bold"
                 transform="uppercase"
                 id="status"
               >
-                Connect to a wallet
+                Connect To A wallet
               </Text>
+              <img
+                src="chevron.png"
+                width={"10%"}
+                style={{ marginLeft: "5px" }}
+              />
             </Button>
           </div>
           <Modal
@@ -655,27 +809,6 @@ export default function Defiswap() {
             </Button>
           </Modal.Footer>
         </Modal>
-        <Modal
-        
-          scroll
-          closeButton
-          blur
-          aria-labelledby="connect_modal"
-          onClose={closeHandler}
-          open={errorSelectToken}
-        >
-          <Modal.Body>
-
-          </Modal.Body>
-          <Modal.Footer>
-            <Button auto flat color="primary" onClick={connect}>
-              Connect Wallet
-            </Button>
-            <Button auto flat color="error" onClick={closeHandler}>
-              Close
-            </Button>
-          </Modal.Footer>
-        </Modal>
         <div className="module headshot glow">
           <div
             style={{
@@ -686,8 +819,8 @@ export default function Defiswap() {
               textShadow: "0px 0px 1px #000000",
             }}
           >
-            <input class="radio" id="tab1" name="groups" type="radio" checked />
-            <input class="radio" id="tab2" name="groups" type="radio" />
+            <input className="radio" id="tab1" name="groups" type="radio" />
+            <input className="radio" id="tab2" name="groups" type="radio" />
             <div className="tabs tablist">
               <div
                 style={{
@@ -699,7 +832,7 @@ export default function Defiswap() {
               >
                 <label
                   title="support"
-                  for="tab1"
+                  // for="tab1"
                   className="tablinks active"
                   onClick={onSwap}
                 >
@@ -707,7 +840,7 @@ export default function Defiswap() {
                 </label>
                 <label
                   title="hotline"
-                  for="tab2"
+                  // for="tab2"
                   className="tablinks"
                   onClick={onSwap}
                 >
@@ -715,13 +848,16 @@ export default function Defiswap() {
                 </label>
               </div>
             </div>
-            <div class="panels">
-              <div class="tabcontent" id="support">
+            <div className="panels">
+              <div className="tabcontent" id="support">
                 <div>
-                  <div style={{position:"relative"}}>
+                  <div style={{ position: "relative" }}>
                     <div>
                       <div justify="center">
-                        <div className="aroundGrid" style={{ marginBottom: "40px" }}>
+                        <div
+                          className="aroundGrid"
+                          style={{ marginBottom: "40px" }}
+                        >
                           <div className="buttonSelect">
                             <a onClick={fromHandler}>
                               <div>
@@ -729,7 +865,8 @@ export default function Defiswap() {
                                 <span
                                   style={{ fontSize: "20px", color: "#BFBFBF" }}
                                 >
-                                  {" " + fname}
+                                  {" " + fname + " "}
+                                  <img src="chevron.png" width={"6%"} />
                                 </span>
                               </div>
                             </a>
@@ -743,6 +880,27 @@ export default function Defiswap() {
                                 id="from_amount"
                                 onChange={(e) => setHold(e.target.value)}
                               />
+                            </div>
+                            <div className="balance">
+                              <div
+                                style={{
+                                  marginLeft: "10px",
+                                  fontSize: "13px",
+                                  fontFamily: "SF Pro Display",
+                                  color: "#BFBFBF",
+                                  position: "absolute",
+                                  right: "24px",
+                                  top: "35px",
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    marginLeft: "$3",
+                                    fontFamily: "SF Pro Display",
+                                  }}
+                                  id="get_balance"
+                                ></span>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -774,11 +932,15 @@ export default function Defiswap() {
                         </Button>
                       </Modal.Footer>
                     </Modal>
-                    
+
                     <div className="img_pluss">
-                    <img src="Muiten.png" alt="" style={{ maxWidth: "30px" }} />
-                  </div>
-                    <div className="aroundGrid" >
+                      <img
+                        src="Muiten.png"
+                        alt=""
+                        style={{ maxWidth: "30px" }}
+                      />
+                    </div>
+                    <div className="aroundGrid">
                       <div className="buttonSelect">
                         <a onClick={toHandler}>
                           <div>
@@ -786,7 +948,8 @@ export default function Defiswap() {
                             <span
                               style={{ fontSize: "20px", color: "#BFBFBF" }}
                             >
-                              {" " + tname}
+                              {" " + tname + " "}
+                              <img src="chevron.png" width={"6%"} />
                             </span>
                           </div>
                         </a>
@@ -803,78 +966,93 @@ export default function Defiswap() {
                     </div>
                   </div>
                   <div>
-                      <div style={{marginTop: "20px", backgroundColor: "rgb(22, 21, 34)",border: "7px solid rgb(32, 34, 49)", borderRadius:"8px" }}>
-                      <div className="balance">
-                      <Row className="Row">
-                        <Text
-                          css={{
-                            marginLeft: "10px",
-                            fontSize: "15px",
-                            fontFamily: "SF Pro Display",
-                            color:"#BFBFBF"
-                          }}
-                        >
-                          Balance:
-                        </Text>
-                        <Text
-                          css={{
-                            marginLeft: "$3",
-                            fontSize: "15px",
-                            fontFamily: "SF Pro Display",
-                          }}
-                          id="get_balance"
-                        ></Text>
-                      </Row>
-                    </div>
-                        <div>
-                          <Row className="Row">
-                            <Text
-                              size={20}
-                              css={{
-                                marginLeft: "$5",
-                                fontFamily: "SF Pro Display",
-                                fontSize: "15px",
-                                color:"#BFBFBF"
-                              }}
-                            >
-                              Gas Estimate:{" "}
-                            </Text>
-                            <p
-                              style={{
-                                fontFamily: "SF Pro Display",
-                                fontSize: "15px",
-                                marginLeft: "4px",
-                                textShadow: "0px 0px 1px #000000",
-                              }}
-                              id="gas_estimate"
-                            ></p>
-                          </Row>
-                        </div>
-                        <div>
-                          <Row className="Row">
-                            <Text
-                              size={24}
-                              css={{
-                                marginLeft: "$5",
-                                fontFamily: "SF Pro Display",
-                                fontSize: "15px",
-                                color:"#BFBFBF"
-                              }}
-                            >
-                              LP Provider:{" "}
-                            </Text>
-                            <p
-                              style={{
-                                fontFamily: "SF Pro Display",
-                                fontSize: "15px",
-                                marginLeft: "4px",
-                                textShadow: "0px 0px 1px #000000",
-                              }}
-                              id="defisource"
-                            ></p>
-                          </Row>
+                    <div
+                      style={{
+                        marginTop: "20px",
+                        backgroundColor: "rgb(22, 21, 34)",
+                        border: "7px solid rgb(32, 34, 49)",
+                        borderRadius: "8px",
+                      }}
+                    >
+                      <div>
+                        <Row className="Row">
+                          <Text
+                            size={20}
+                            css={{
+                              marginLeft: "$5",
+                              fontFamily: "SF Pro Display",
+                              fontSize: "15px",
+                              color: "#BFBFBF",
+                            }}
+                          >
+                            Gas Estimate:{" "}
+                          </Text>
+                          <p
+                            style={{
+                              fontFamily: "SF Pro Display",
+                              fontSize: "15px",
+                              marginLeft: "4px",
+                              textShadow: "0px 0px 1px #000000",
+                            }}
+                            id="gas_estimate"
+                          ></p>
+                        </Row>
+                      </div>
+                      
+                      <div>
+                        <Row className="Row">
+                          <Text
+                            size={24}
+                            css={{
+                              marginLeft: "$5",
+                              fontFamily: "SF Pro Display",
+                              fontSize: "15px",
+                              color: "#BFBFBF",
+                            }}
+                          >
+                            LP Provider:{" "}
+                          </Text>
+                          <p
+                            style={{
+                              fontFamily: "SF Pro Display",
+                              fontSize: "15px",
+                              marginLeft: "4px",
+                              textShadow: "0px 0px 1px #000000",
+                            }}
+                            id="defisource"
+                          ></p>
+                          <p
+                            style={{
+                              fontFamily: "SF Pro Display",
+                              fontSize: "15px",
+                              marginLeft: "4px",
+                              textShadow: "0px 0px 1px #000000",
+                              display:"none"
+                            }}
+                            id="hotpotLiquid"
+                          >HotPot Swap</p>
+                        </Row>
+                      </div>
+                      <div id="lqHotpot">
+                        <div className="Row">
+                          <Text
+                            size={24}
+                            css={{
+                              marginLeft: "$5",
+                              fontFamily: "SF Pro Display",
+                              fontSize: "15px",
+                              color: "#BFBFBF",
+                            }}
+                          >
+                            Useing HotPot Liquidity Provider:{" "}
+                          </Text>
+                          <label className="switch" id="switch">
+                              <input type="checkbox" onChange={checkSwitch} id="checkSwitch" />
+                              <span className="slider round"></span>
+                            </label>
                         </div>
                       </div>
+                    </div>
                     <div
                       style={{
                         marginTop: "10px",
@@ -1238,9 +1416,9 @@ export default function Defiswap() {
                   </div>
                 </div>
               </div>
-              <div class="tabcontent" id="hotline">
+              <div className="tabcontent" id="hotline">
                 <div
-                  class="add_liquidity box-cskh bgfff pad16 row mb-8"
+                  className="add_liquidity box-cskh bgfff pad16 row mb-8"
                   style={{ position: "relative" }}
                 >
                   <div
@@ -1252,7 +1430,8 @@ export default function Defiswap() {
                         <div>
                           <img src={flogoliquid} style={{ width: "30px" }} />
                           <span style={{ fontSize: "20px", color: "#BFBFBF" }}>
-                            {" " + fnameliquid}
+                            {" " + fnameliquid + " "}
+                            <img src="chevron.png" width={"6%"} />
                           </span>
                         </div>
                       </a>
@@ -1267,6 +1446,27 @@ export default function Defiswap() {
                           onChange={(e) => setValue(e.target.value)}
                         />
                       </div>
+                      <div className="balance">
+                        <div
+                          style={{
+                            marginLeft: "10px",
+                            fontSize: "13px",
+                            fontFamily: "SF Pro Display",
+                            color: "#BFBFBF",
+                            position: "absolute",
+                            right: "24px",
+                            top: "35px",
+                          }}
+                        >
+                          <span
+                            style={{
+                              marginLeft: "$3",
+                              fontFamily: "SF Pro Display",
+                            }}
+                            id="get_balance_from_liquid"
+                          ></span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="img_pluss">
@@ -1278,7 +1478,8 @@ export default function Defiswap() {
                         <div>
                           <img src={tlogoliquid} style={{ width: "25px" }} />
                           <span style={{ fontSize: "20px", color: "#BFBFBF" }}>
-                            {" " + tnameliquid}
+                            {" " + tnameliquid + " "}
+                            <img src="chevron.png" width={"6%"} />
                           </span>
                         </div>
                       </a>
@@ -1293,20 +1494,49 @@ export default function Defiswap() {
                           onChange={(e) => setValue(e.target.value)}
                         />
                       </div>
+                      <div className="balance">
+                        <div
+                          style={{
+                            marginLeft: "10px",
+                            fontSize: "13px",
+                            fontFamily: "SF Pro Display",
+                            color: "#BFBFBF",
+                            position: "absolute",
+                            right: "24px",
+                            top: "35px",
+                          }}
+                        >
+                          <span
+                            style={{
+                              marginLeft: "$3",
+                              fontFamily: "SF Pro Display",
+                            }}
+                            id="get_balance_to_liquid"
+                          ></span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div style={{marginTop: "20px", backgroundColor: "rgb(22, 21, 34)",border: "7px solid rgb(32, 34, 49)", borderRadius:"8px" }}>
-                      <div className="fromPerTo">
+                  <div
+                    style={{
+                      marginTop: "20px",
+                      backgroundColor: "rgb(22, 21, 34)",
+                      border: "7px solid rgb(32, 34, 49)",
+                      borderRadius: "8px",
+                    }}
+                  >
+                    <div className="fromPerTo">
                       <div className="Row">
                         <div
                           style={{
                             marginLeft: "10px",
                             fontSize: "15px",
                             fontFamily: "SF Pro Display",
-                            color:"#BFBFBF"
+                            color: "#BFBFBF",
                           }}
                         >
-                          <span id="to_from"></span>{" " + tnameliquid} per {" " + fnameliquid}
+                          <span id="to_from"></span>
+                          {" " + tnameliquid} per {" " + fnameliquid}
                         </div>
                         <div
                           style={{
@@ -1315,21 +1545,24 @@ export default function Defiswap() {
                             fontFamily: "SF Pro Display",
                           }}
                           id="fromPerTo"
-                        >0%</div>
+                        >
+                          0%
+                        </div>
                       </div>
                     </div>
 
-                      <div className="toPerFrom">
+                    <div className="toPerFrom">
                       <div className="Row">
                         <div
                           style={{
                             marginLeft: "10px",
                             fontSize: "15px",
                             fontFamily: "SF Pro Display",
-                            color:"#BFBFBF"
+                            color: "#BFBFBF",
                           }}
                         >
-                          <span id="from_to"></span>{" " + fnameliquid} per {" " + tnameliquid}
+                          <span id="from_to"></span>
+                          {" " + fnameliquid} per {" " + tnameliquid}
                         </div>
                         <div
                           style={{
@@ -1338,10 +1571,12 @@ export default function Defiswap() {
                             fontFamily: "SF Pro Display",
                           }}
                           id="fromPerTo"
-                        >Share of Pool</div>
+                        >
+                          Share of Pool
+                        </div>
                       </div>
                     </div>
-                      </div>
+                  </div>
                   <div
                     style={{
                       marginTop: "10px",
@@ -1356,7 +1591,7 @@ export default function Defiswap() {
                       }}
                     >
                       <Text
-                      id="hihi"
+                        id="hihi"
                         css={{
                           display: "flex",
                           justifyContent: "center",
@@ -1368,233 +1603,171 @@ export default function Defiswap() {
                         Approve !
                       </Text>
                     </Card>
-                <Modal
-                        scroll
-                        closeButton
-                        blur
-                        aria-labelledby="connect_modal"
-                        onClose={closeHandler}
-                        open={modalLiquid}
-                      >
-                        <Modal.Header>
+                    <Modal
+                      scroll
+                      closeButton
+                      blur
+                      aria-labelledby="connect_modal"
+                      onClose={closeHandler}
+                      open={modalLiquid}
+                    >
+                      <Modal.Header>
+                        <div
+                          style={{
+                            fontSize: "25px",
+                            fontFamily: "SF Pro Display",
+                            fontWeight: "$bold",
+                          }}
+                        >
+                          Add Liquidity
+                        </div>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <div>
                           <div
                             style={{
-                              fontSize: "25px",
-                              fontFamily: "SF Pro Display",
-                              fontWeight: "$bold",
+                              marginBottom: "30px",
+                              justifyContent: "space-between",
                             }}
                           >
-                            Add Liquidity
+                            <div>
+                              <Text
+                                size="$3xl"
+                                css={{
+                                  fontFamily: "SF Pro Display",
+                                  textShadow: "0px 0px 1px #000000",
+                                  fontWeight: "400",
+                                  color: "white",
+                                  ml: "$10",
+                                  fontSize: "17px",
+                                  paddingRight: "5px",
+                                  borderRadius: "30px",
+                                  padding: "6px 10px 0px 10px",
+                                  marginTop: "6px",
+                                  height: "45px",
+                                  maxWidth: "100%",
+                                  background: "#363636",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  background: "#363636",
+                                  marginLeft: "0px",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <img
+                                    src={flogoliquid}
+                                    style={{ width: "30px" }}
+                                  />
+                                  <Text
+                                    type="text"
+                                    size="15px"
+                                    css={{
+                                      fontFamily: "SF Pro Display",
+                                      color: "white",
+                                      textShadow: "0px 0px 3px #39FF14",
+                                      ml: "$2",
+                                    }}
+                                    className="number"
+                                    color="default"
+                                    id="fromToken"
+                                  />
+                                </div>
+                                <span style={{ fontSize: "20px" }}>
+                                  {" " + fnameliquid}
+                                </span>
+                              </Text>
+                            </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                margin: "5px 0px",
+                              }}
+                            >
+                              <img src={"plus.png"} style={{ width: "30px" }} />
+                            </div>
+                            <div>
+                              <Text
+                                size="$3xl"
+                                css={{
+                                  fontFamily: "SF Pro Display",
+                                  textShadow: "0px 0px 1px #000000",
+                                  fontWeight: "400",
+                                  color: "white",
+                                  ml: "$10",
+                                  fontSize: "15px",
+                                  paddingRight: "5px",
+                                  borderRadius: "30px",
+                                  padding: "4px 10px 0px 10px",
+                                  marginTop: "5px",
+                                  height: "45px",
+                                  maxWidth: "100%",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  background: "#363636",
+                                  marginLeft: "0px",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <img
+                                    src={tlogoliquid}
+                                    style={{ width: "30px" }}
+                                  />
+                                  <Text
+                                    type="text"
+                                    size="15px"
+                                    css={{
+                                      fontFamily: "SF Pro Display",
+                                      color: "white",
+                                      textShadow: "0px 0px 3px #39FF14",
+                                      ml: "$2",
+                                    }}
+                                    className="number"
+                                    color="default"
+                                    id="toToken"
+                                  />
+                                </div>
+                                <span style={{ fontSize: "20px" }}>
+                                  {" " + tnameliquid}
+                                </span>
+                              </Text>
+                            </div>
                           </div>
-                        </Modal.Header>
-                        <Modal.Body>
                           <div>
                             <div
                               style={{
-                                marginBottom: "30px",
+                                display: "flex",
+                                alignItems: "center",
                                 justifyContent: "space-between",
                               }}
                             >
-                              <div>
-                                <Text
-                                  size="$3xl"
-                                  css={{
-                                    fontFamily: "SF Pro Display",
-                                    textShadow: "0px 0px 1px #000000",
-                                    fontWeight: "400",
-                                    color: "white",
-                                    ml: "$10",
-                                    fontSize: "17px",
-                                    paddingRight: "5px",
-                                    borderRadius: "30px",
-                                    padding: "6px 10px 0px 10px",
-                                    marginTop: "6px",
-                                    height: "45px",
-                                    maxWidth: "100%",
-                                    background: "#363636",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                    background: "#363636",
-                                    marginLeft: "0px",
-                                  }}
-                                >
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <img
-                                      src={flogoliquid}
-                                      style={{ width: "30px" }}
-                                    />
-                                    <Text
-                                      type="text"
-                                      size="15px"
-                                      css={{
-                                        fontFamily: "SF Pro Display",
-                                        color: "white",
-                                        textShadow: "0px 0px 3px #39FF14",
-                                        ml: "$2",
-                                      }}
-                                      className="number"
-                                      color="default"
-                                      id="fromToken"
-                                    />
-                                  </div>
-                                  <span style={{ fontSize: "20px" }}>
-                                    {" " + fnameliquid}
-                                  </span>
-                                </Text>
-                              </div>
-                              <div
+                              <span
+                                size={20}
+                                css={{ marginLeft: "$5" }}
                                 style={{
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  margin: "5px 0px",
+                                  fontSize: "15px",
+                                  fontFamily: "SF Pro Display",
+                                  fontWeight: "bold",
+                                  color: "#808080",
                                 }}
                               >
-                                <img
-                                  src={"plus.png"}
-                                  style={{ width: "30px" }}
-                                />
-                              </div>
-                              <div>
-                                <Text
-                                  size="$3xl"
-                                  css={{
-                                    fontFamily: "SF Pro Display",
-                                    textShadow: "0px 0px 1px #000000",
-                                    fontWeight: "400",
-                                    color: "white",
-                                    ml: "$10",
-                                    fontSize: "15px",
-                                    paddingRight: "5px",
-                                    borderRadius: "30px",
-                                    padding: "4px 10px 0px 10px",
-                                    marginTop: "5px",
-                                    height: "45px",
-                                    maxWidth: "100%",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                    background: "#363636",
-                                    marginLeft: "0px",
-                                  }}
-                                >
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <img
-                                      src={tlogoliquid}
-                                      style={{ width: "30px" }}
-                                    />
-                                    <Text
-                                      type="text"
-                                      size="15px"
-                                      css={{
-                                        fontFamily: "SF Pro Display",
-                                        color: "white",
-                                        textShadow: "0px 0px 3px #39FF14",
-                                        ml: "$2",
-                                      }}
-                                      className="number"
-                                      color="default"
-                                      id="toToken"
-                                    />
-                                  </div>
-                                  <span style={{ fontSize: "20px" }}>
-                                    {" " + tnameliquid}
-                                  </span>
-                                </Text>
-                              </div>
-                            </div>
-                            <div>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "space-between",
-                                }}
-                              >
-                                <span
-                                  size={20}
-                                  css={{ marginLeft: "$5" }}
-                                  style={{
-                                    fontSize: "15px",
-                                    fontFamily: "SF Pro Display",
-                                    fontWeight: "bold",
-                                    color: "#808080",
-                                  }}
-                                >
-                                  Adding:{" "}
-                                </span>
-                                <div style={{ display: "flex" }}>
-                                  <p
-                                    style={{
-                                      fontFamily: "SF Pro Display",
-                                      fontSize: "15px",
-                                      marginLeft: "4px",
-                                      color: "white",
-                                      textShadow: "0px 0px 1px #000000",
-                                    }}
-                                    id=""
-                                  >
-                                    {fnameliquid}
-                                  </p>
-                                  <p
-                                    style={{
-                                      fontFamily: "SF Pro Display",
-                                      fontSize: "15px",
-                                      marginLeft: "4px",
-                                      color: "white",
-                                      textShadow: "0px 0px 1px #000000",
-                                    }}
-                                    id=""
-                                  >
-                                    {"+"}
-                                  </p>
-                                  <p
-                                    style={{
-                                      fontFamily: "SF Pro Display",
-                                      fontSize: "15px",
-                                      marginLeft: "4px",
-                                      color: "white",
-                                      textShadow: "0px 0px 1px #000000",
-                                    }}
-                                    id=""
-                                  >
-                                    {tnameliquid}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                            <div>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "space-between",
-                                }}
-                              >
-                                <span
-                                  size={24}
-                                  css={{ marginLeft: "$5", color: "white" }}
-                                  style={{
-                                    fontSize: "15px",
-                                    fontFamily: "SF Pro Display",
-                                    fontWeight: "bold",
-                                    color: "#808080",
-                                  }}
-                                >
-                                  {" " + fnameliquid} per {" " + tnameliquid}
-                                </span>
+                                Adding:{" "}
+                              </span>
+                              <div style={{ display: "flex" }}>
                                 <p
                                   style={{
                                     fontFamily: "SF Pro Display",
@@ -1603,30 +1776,10 @@ export default function Defiswap() {
                                     color: "white",
                                     textShadow: "0px 0px 1px #000000",
                                   }}
-                                  id="fromTokenLiquid"
-                                ></p>
-                              </div>
-                            </div>
-                            <div>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "space-between",
-                                }}
-                              >
-                                <span
-                                  size={24}
-                                  css={{ marginLeft: "$5", color: "white" }}
-                                  style={{
-                                    fontSize: "15px",
-                                    fontFamily: "SF Pro Display",
-                                    fontWeight: "bold",
-                                    color: "#808080",
-                                  }}
+                                  id=""
                                 >
-                                  {" " + tnameliquid} per {" " + fnameliquid}
-                                </span>
+                                  {fnameliquid}
+                                </p>
                                 <p
                                   style={{
                                     fontFamily: "SF Pro Display",
@@ -1635,37 +1788,116 @@ export default function Defiswap() {
                                     color: "white",
                                     textShadow: "0px 0px 1px #000000",
                                   }}
-                                  id="toTokenLiquid"
-                                ></p>
+                                  id=""
+                                >
+                                  {"+"}
+                                </p>
+                                <p
+                                  style={{
+                                    fontFamily: "SF Pro Display",
+                                    fontSize: "15px",
+                                    marginLeft: "4px",
+                                    color: "white",
+                                    textShadow: "0px 0px 1px #000000",
+                                  }}
+                                  id=""
+                                >
+                                  {tnameliquid}
+                                </p>
                               </div>
                             </div>
                           </div>
-                        </Modal.Body>
-                        <Modal.Footer>
-                          <Card
-                            isPressable
-                            className="btn-grad"
-                            // onPress={swapit}
-                            style={{
-                              margin: "0 auto",
-                              maxWidth: "100%",
-                              height: "45px",
-                            }}
-                          >
-                            <Text
-                              css={{
+                          <div>
+                            <div
+                              style={{
                                 display: "flex",
-                                justifyContent: "center",
-                                textShadow: "0px 0px 2px #000000",
+                                alignItems: "center",
+                                justifyContent: "space-between",
                               }}
-                              size="22px"
-                              weight="bold"
                             >
-                              Confirm Adding Liquidity
-                            </Text>
-                          </Card>
-                        </Modal.Footer>
-                      </Modal>
+                              <span
+                                size={24}
+                                css={{ marginLeft: "$5", color: "white" }}
+                                style={{
+                                  fontSize: "15px",
+                                  fontFamily: "SF Pro Display",
+                                  fontWeight: "bold",
+                                  color: "#808080",
+                                }}
+                              >
+                                {" " + fnameliquid} per {" " + tnameliquid}
+                              </span>
+                              <p
+                                style={{
+                                  fontFamily: "SF Pro Display",
+                                  fontSize: "15px",
+                                  marginLeft: "4px",
+                                  color: "white",
+                                  textShadow: "0px 0px 1px #000000",
+                                }}
+                                id="fromTokenLiquid"
+                              ></p>
+                            </div>
+                          </div>
+                          <div>
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <span
+                                size={24}
+                                css={{ marginLeft: "$5", color: "white" }}
+                                style={{
+                                  fontSize: "15px",
+                                  fontFamily: "SF Pro Display",
+                                  fontWeight: "bold",
+                                  color: "#808080",
+                                }}
+                              >
+                                {" " + tnameliquid} per {" " + fnameliquid}
+                              </span>
+                              <p
+                                style={{
+                                  fontFamily: "SF Pro Display",
+                                  fontSize: "15px",
+                                  marginLeft: "4px",
+                                  color: "white",
+                                  textShadow: "0px 0px 1px #000000",
+                                }}
+                                id="toTokenLiquid"
+                              ></p>
+                            </div>
+                          </div>
+                        </div>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Card
+                          isPressable
+                          className="btn-grad"
+                          onPress={confirmAdding}
+                          style={{
+                            margin: "0 auto",
+                            maxWidth: "100%",
+                            height: "45px",
+                          }}
+                        >
+                          <Text
+                            css={{
+                              display: "flex",
+                              justifyContent: "center",
+                              textShadow: "0px 0px 2px #000000",
+                            }}
+                            size="22px"
+                            weight="bold"
+                          >
+                            Confirm Adding Liquidity
+                          </Text>
+                        </Card>
+                      </Modal.Footer>
+                    </Modal>
                   </div>
                 </div>
               </div>
