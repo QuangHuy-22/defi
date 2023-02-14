@@ -21,6 +21,7 @@ import { ethers } from "ethers";
 import { Alchemy, Network } from "alchemy-sdk";
 import truncateEthAddress from "truncate-eth-address";
 import Swal from "sweetalert2";
+import { set } from "nprogress";
 
 export default function Defiswap() {
   const { visible, setVisible } = useModal();
@@ -46,7 +47,6 @@ export default function Defiswap() {
   const [alert, setAlert] = useState(false);
   const [swap, setSwap] = useState(false);
   const [modalLiquid, setModalLiquid] = useState(false);
-  const [errorSelectToken, setErrorSelectToken] = useState(false);
   const [walletConnect, setWalletConnect] = useState(false);
   const [price, setPrice] = useState([]);
   const [priceliquid, setPriceLiquid] = useState([]);
@@ -84,12 +84,9 @@ export default function Defiswap() {
     setPriceLiquidTo,
     setOrderLiquidTo,
   ]);
-  async function setLocal(){
-    localStorage.setItem("data_liquid", JSON.stringify(listLiquid))
-  }
-  useEffect(() => {}, [setLocal()]);
 
   useEffect(() => {}, [getToLogo, getToName, getToAddr]);
+  useEffect(() => {}, [getToLogoLiquid, getToName, getToAddr]);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -111,7 +108,6 @@ export default function Defiswap() {
   let toSelectSide = null;
 
   const sendAlert = () => setAlert(true);
-  const sendErrorSelect = () => setErrorSelectToken(true);
 
   const fromHandler = (side) => {
     if (wallet.includes("0x")) {
@@ -156,7 +152,6 @@ export default function Defiswap() {
     setAlert(false);
     setSwap(false);
     setWalletConnect(false);
-    setErrorSelectToken(false);
     setModalLiquid(false);
     console.log("closed");
   };
@@ -237,6 +232,15 @@ export default function Defiswap() {
       confirmButtonText: "Cool",
     });
   }
+  async function successAddLiquid() {
+    Swal.fire({
+      icon: "success",
+      title: "Add Liquidity Successful",
+      showConfirmButton: true,
+      timer: 5500,
+    });
+  }
+
   async function approve() {
     const spanToLiquid = document.getElementById(
       "get_balance_to_liquid"
@@ -484,9 +488,8 @@ export default function Defiswap() {
       document.getElementById("from_to").innerHTML = per2.toFixed(2);
       document.getElementById("fromPerTo").innerHTML = "100%";
     }
-    console.log("from:", fromLiquid / toLiquid);
-    console.log("to:", toLiquid);
   }
+
   async function getPrice() {
     console.log("Getting Price");
     if (!faddr || !taddr || !document.getElementById("from_amount").value)
@@ -514,6 +517,7 @@ export default function Defiswap() {
     } catch (error) {
       document.getElementById("defisource").innerHTML = "Pool Not Available";
     }
+    checkToken();
     var rawvalue = swapOrders.buyAmount / 10 ** tdec;
     var value = rawvalue.toFixed(2);
     document.getElementById("to_amount").value = value;
@@ -562,10 +566,19 @@ export default function Defiswap() {
     });
     console.log(ethereum);
     closeHandler();
+    successSwap();
+  }
+
+  async function successSwap() {
+    Swal.fire({
+      icon: "success",
+      title: "Successful Transaction",
+      showConfirmButton: true,
+      timer: 5500,
+    });
   }
 
   async function confirmAdding() {
-    const data_liquid = localStorage.getItem("data_liquid")
     const valueTokenFrom = document.getElementById("from_liquid").value;
     const valueTokenTo = document.getElementById("to_liquid").value;
     const data = {
@@ -578,21 +591,53 @@ export default function Defiswap() {
     };
     if (valueTokenTo && valueTokenFrom) {
       if (listLiquid.length != 0) {
-        for (let i = 0; i < data_liquid.length; i++) {
-          // const element = array[i];
-          
-          console.log(data_liquid);
-          // const pushData = data_liquid.push.apply(data)
-          const pushData = [{...data_liquid},data]
-          console.log(pushData);
-        }
+        pushData(data);
       }
-      // setListLiquid(data);
     }
-    // const dataLiquid = JSON.stringify(data)
-    // localStorage.setItem("data_liquid", dataLiquid)
   }
 
+  async function pushData(data) {
+    listLiquid.push(data);
+    console.log("listLiquid", listLiquid);
+    setLocal();
+    closeHandler();
+    successAddLiquid();
+  }
+  async function setLocal() {
+    localStorage.setItem("data_liquid", JSON.stringify(listLiquid));
+  }
+
+  async function checkToken() {
+    const fromValue = document.getElementById("from_amount").value
+    const toValue = document.getElementById("to_amount").value
+    console.log("fromValue:", fromValue);
+    console.log("toValue:", toValue);
+    const data_liquid = localStorage.getItem("data_liquid");
+    const checkData = JSON.parse(data_liquid).find(
+      (c) => c.fName == fname && c.tName == tname
+    );
+    console.log(checkData);
+    if (checkData) {
+      if(checkData.fValue >= fromValue && checkData.tValue >= toValue)
+      document.getElementById("lqHotpot").style.display = "block";
+      else {
+        document.getElementById("lqHotpot").style.display = "none";
+        document.getElementById("hotpotLiquid").style.display = "none";
+        document.getElementById("defisource").style.display = "flex";
+      }
+    }
+  }
+  async function checkSwitch() {
+    const flag = document.getElementById("checkSwitch").checked
+    if (flag) {
+      document.getElementById("hotpotLiquid").style.display = "flex";
+      document.getElementById("defisource").style.display = "none";
+    }
+    else {
+      document.getElementById("hotpotLiquid").style.display = "none";
+      document.getElementById("defisource").style.display = "flex";
+    }
+  }
   async function onSwap(e) {
     const name = e.currentTarget.title;
     var i;
@@ -619,7 +664,7 @@ export default function Defiswap() {
               display: "flex",
               alignItems: "center",
             }}
-            onClick={sendErrorSelect}
+            onClick={checkToken}
           >
             <img src="logo.png" width={"50%"} />
           </div>
@@ -633,13 +678,18 @@ export default function Defiswap() {
             >
               <Text
                 css={{ color: "white" }}
-                size={16}
+                size={15}
                 weight="bold"
                 transform="uppercase"
                 id="status"
               >
-                Connect to a wallet
+                Connect To A wallet
               </Text>
+              <img
+                src="chevron.png"
+                width={"10%"}
+                style={{ marginLeft: "5px" }}
+              />
             </Button>
           </div>
           <Modal
@@ -759,24 +809,6 @@ export default function Defiswap() {
             </Button>
           </Modal.Footer>
         </Modal>
-        <Modal
-          scroll
-          closeButton
-          blur
-          aria-labelledby="connect_modal"
-          onClose={closeHandler}
-          open={errorSelectToken}
-        >
-          <Modal.Body></Modal.Body>
-          <Modal.Footer>
-            <Button auto flat color="primary" onClick={connect}>
-              Connect Wallet
-            </Button>
-            <Button auto flat color="error" onClick={closeHandler}>
-              Close
-            </Button>
-          </Modal.Footer>
-        </Modal>
         <div className="module headshot glow">
           <div
             style={{
@@ -787,8 +819,8 @@ export default function Defiswap() {
               textShadow: "0px 0px 1px #000000",
             }}
           >
-            <input class="radio" id="tab1" name="groups" type="radio" checked />
-            <input class="radio" id="tab2" name="groups" type="radio" />
+            <input className="radio" id="tab1" name="groups" type="radio" />
+            <input className="radio" id="tab2" name="groups" type="radio" />
             <div className="tabs tablist">
               <div
                 style={{
@@ -800,7 +832,7 @@ export default function Defiswap() {
               >
                 <label
                   title="support"
-                  for="tab1"
+                  // for="tab1"
                   className="tablinks active"
                   onClick={onSwap}
                 >
@@ -808,7 +840,7 @@ export default function Defiswap() {
                 </label>
                 <label
                   title="hotline"
-                  for="tab2"
+                  // for="tab2"
                   className="tablinks"
                   onClick={onSwap}
                 >
@@ -816,8 +848,8 @@ export default function Defiswap() {
                 </label>
               </div>
             </div>
-            <div class="panels">
-              <div class="tabcontent" id="support">
+            <div className="panels">
+              <div className="tabcontent" id="support">
                 <div>
                   <div style={{ position: "relative" }}>
                     <div>
@@ -833,7 +865,8 @@ export default function Defiswap() {
                                 <span
                                   style={{ fontSize: "20px", color: "#BFBFBF" }}
                                 >
-                                  {" " + fname}
+                                  {" " + fname + " "}
+                                  <img src="chevron.png" width={"6%"} />
                                 </span>
                               </div>
                             </a>
@@ -915,7 +948,8 @@ export default function Defiswap() {
                             <span
                               style={{ fontSize: "20px", color: "#BFBFBF" }}
                             >
-                              {" " + tname}
+                              {" " + tname + " "}
+                              <img src="chevron.png" width={"6%"} />
                             </span>
                           </div>
                         </a>
@@ -964,6 +998,7 @@ export default function Defiswap() {
                           ></p>
                         </Row>
                       </div>
+                      
                       <div>
                         <Row className="Row">
                           <Text
@@ -986,7 +1021,36 @@ export default function Defiswap() {
                             }}
                             id="defisource"
                           ></p>
+                          <p
+                            style={{
+                              fontFamily: "SF Pro Display",
+                              fontSize: "15px",
+                              marginLeft: "4px",
+                              textShadow: "0px 0px 1px #000000",
+                              display:"none"
+                            }}
+                            id="hotpotLiquid"
+                          >HotPot Swap</p>
                         </Row>
+                      </div>
+                      <div id="lqHotpot">
+                        <div className="Row">
+                          <Text
+                            size={24}
+                            css={{
+                              marginLeft: "$5",
+                              fontFamily: "SF Pro Display",
+                              fontSize: "15px",
+                              color: "#BFBFBF",
+                            }}
+                          >
+                            Useing HotPot Liquidity Provider:{" "}
+                          </Text>
+                          <label className="switch" id="switch">
+                              <input type="checkbox" onChange={checkSwitch} id="checkSwitch" />
+                              <span className="slider round"></span>
+                            </label>
+                        </div>
                       </div>
                     </div>
                     <div
@@ -1352,9 +1416,9 @@ export default function Defiswap() {
                   </div>
                 </div>
               </div>
-              <div class="tabcontent" id="hotline">
+              <div className="tabcontent" id="hotline">
                 <div
-                  class="add_liquidity box-cskh bgfff pad16 row mb-8"
+                  className="add_liquidity box-cskh bgfff pad16 row mb-8"
                   style={{ position: "relative" }}
                 >
                   <div
@@ -1366,7 +1430,8 @@ export default function Defiswap() {
                         <div>
                           <img src={flogoliquid} style={{ width: "30px" }} />
                           <span style={{ fontSize: "20px", color: "#BFBFBF" }}>
-                            {" " + fnameliquid}
+                            {" " + fnameliquid + " "}
+                            <img src="chevron.png" width={"6%"} />
                           </span>
                         </div>
                       </a>
@@ -1413,7 +1478,8 @@ export default function Defiswap() {
                         <div>
                           <img src={tlogoliquid} style={{ width: "25px" }} />
                           <span style={{ fontSize: "20px", color: "#BFBFBF" }}>
-                            {" " + tnameliquid}
+                            {" " + tnameliquid + " "}
+                            <img src="chevron.png" width={"6%"} />
                           </span>
                         </div>
                       </a>
