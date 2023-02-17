@@ -7,7 +7,7 @@ export default function handler(req, res) {
                 "name": "Uniswap",
                 "symbol": "UNI",
                 "decimals": 18,
-                "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/uni.png"
+                "logoURI": "http://localhost:3000/tokenimg/uni.png"
               },
               {
                 "chainId": 1,
@@ -15,7 +15,7 @@ export default function handler(req, res) {
                 "name": "Tether",
                 "symbol": "USDT",
                 "decimals": 6,
-                "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/usdt.png"
+                "logoURI": "http://localhost:3000/tokenimg/usdt.png"
               },
               {
                 "chainId": 1,
@@ -23,7 +23,7 @@ export default function handler(req, res) {
                 "name": "USD Coin",
                 "symbol": "USDC",
                 "decimals": 6,
-                "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/usdc.png"
+                "logoURI": "http://localhost:3000/tokenimg/usdc.png"
               },
               {
                 "chainId": 1,
@@ -31,7 +31,7 @@ export default function handler(req, res) {
                 "name": "Chainlink",
                 "symbol": "LINK",
                 "decimals": 18,
-                "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/link.png"
+                "logoURI": "http://localhost:3000/tokenimg/link.png"
               },
               {
                 "chainId": 1,
@@ -39,7 +39,7 @@ export default function handler(req, res) {
                 "name": "Polygon",
                 "symbol": "MATIC",
                 "decimals": 18,
-                "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/matic.webp"
+                "logoURI": "http://localhost:3000/tokenimg/matic.webp"
               },
               {
                 "chainId": 1,
@@ -47,7 +47,7 @@ export default function handler(req, res) {
                 "name": "0x",
                 "symbol": "ZRX",
                 "decimals": 18,
-                "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/zrx.png"
+                "logoURI": "http://localhost:3000/tokenimg/zrx.png"
               },
               {
                 "chainId": 1,
@@ -55,7 +55,7 @@ export default function handler(req, res) {
                 "name": "Sushi",
                 "symbol": "SUSHI",
                 "decimals": 18,
-                "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/sushi.webp"
+                "logoURI": "http://localhost:3000/tokenimg/sushi.webp"
               },
               {
                 "chainId": 1,
@@ -63,7 +63,7 @@ export default function handler(req, res) {
                 "name": "Aave",
                 "symbol": "AAVE",
                 "decimals": 18,
-                "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/aave.webp"
+                "logoURI": "http://localhost:3000/tokenimg/aave.webp"
               },
               {
                 "chainId": 1,
@@ -71,7 +71,7 @@ export default function handler(req, res) {
                 "name": "The Graph",
                 "symbol": "GRT",
                 "decimals": 18,
-                "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/grt.webp"
+                "logoURI": "http://localhost:3000/tokenimg/grt.webp"
               },
               {
                 "chainId": 1,
@@ -79,7 +79,7 @@ export default function handler(req, res) {
                 "name": "1inch",
                 "symbol": "1INCH",
                 "decimals": 18,
-                "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/1inch.webp"
+                "logoURI": "http://localhost:3000/tokenimg/1inch.webp"
               },
               {
                 "chainId": 1,
@@ -87,7 +87,7 @@ export default function handler(req, res) {
                 "name": "Alchemy Pay",
                 "symbol": "ACH",
                 "decimals": 8,
-                "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/ach.webp"
+                "logoURI": "http://localhost:3000/tokenimg/ach.webp"
               },
               {
                 "chainId": 1,
@@ -95,7 +95,7 @@ export default function handler(req, res) {
                 "name": "Ankr",
                 "symbol": "ANKR",
                 "decimals": 18,
-                "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/ankr.webp"
+                "logoURI": "http://localhost:3000/tokenimg/ankr.webp"
               },
               {
                 "chainId": 3,
@@ -103,7 +103,7 @@ export default function handler(req, res) {
                 "name": "N2D Rewards",
                 "symbol": "N2DR",
                 "decimals": 18,
-                "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/n2dr.png"
+                "logoURI": "http://localhost:3000/tokenimg/n2dr.png"
               },
               {
                 "chainId": 3,
@@ -111,7 +111,7 @@ export default function handler(req, res) {
                 "name": "Net2Dev USD",
                 "symbol": "n2USD",
                 "decimals": 18,
-                "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/usdt.png"
+                "logoURI": "http://localhost:3000/tokenimg/usdt.png"
               },
               {
                 "chainId": 3,
@@ -119,7 +119,7 @@ export default function handler(req, res) {
                 "name": "RopstenETH",
                 "symbol": "WETH",
                 "decimals": 18,
-                "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/eth.png"
+                "logoURI": "http://localhost:3000/tokenimg/eth.png"
               },
               {
                 "chainId": 3,
@@ -127,7 +127,7 @@ export default function handler(req, res) {
                 "name": "RopstenUSDC",
                 "symbol": "RUSDC",
                 "decimals": 6,
-                "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/usdc.png"
+                "logoURI": "http://localhost:3000/tokenimg/usdc.png"
               },
               {
                 "chainId": 3,
@@ -135,7 +135,7 @@ export default function handler(req, res) {
                 "name": "RopUniswap",
                 "symbol": "RUNI",
                 "decimals": 18,
-                "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/uni.png"
+                "logoURI": "http://localhost:3000/tokenimg/uni.png"
               },
             {
               "chainId": 3,
@@ -143,7 +143,7 @@ export default function handler(req, res) {
               "name": "RopDai",
               "symbol": "RDAI",
               "decimals": 18,
-              "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/dai.svg"
+              "logoURI": "http://localhost:3000/tokenimg/dai.svg"
             },
             {
               "chainId": 5,
@@ -151,7 +151,7 @@ export default function handler(req, res) {
               "name": "GoerliEth",
               "symbol": "GoETH",
               "decimals": 18,
-              "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/eth.png"
+              "logoURI": "http://localhost:3000/tokenimg/eth.png"
             },
             {
               "chainId": 5,
@@ -159,7 +159,7 @@ export default function handler(req, res) {
               "name": "GoerliDai",
               "symbol": "GoDAI",
               "decimals": 18,
-              "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/dai.svg"
+              "logoURI": "http://localhost:3000/tokenimg/dai.svg"
             },
             {
               "chainId": 5,
@@ -167,7 +167,7 @@ export default function handler(req, res) {
               "name": "GoerliUSDC",
               "symbol": "GoUSDC",
               "decimals": 6,
-              "logoURI": "https://hotpot-defi-app.netlify.app/tokenimg/usdc.png"
+              "logoURI": "http://localhost:3000/tokenimg/usdc.png"
             }
             ]
           }          

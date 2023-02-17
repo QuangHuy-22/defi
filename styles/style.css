@@ -275,3 +275,6 @@ input:checked + .slider:before {
 #lqHotpot{
   display: none;
 }
+.learnAbout:hover{
+  text-decoration-line: underline;
+}
