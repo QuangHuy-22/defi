@@ -138,10 +138,14 @@ export default function Defiswap() {
   };
 
   const toHandler = (side) => {
-    setVisible(true);
-    toSelectSide = side;
-    listToTokens();
-    getPrice();
+    if (wallet.includes("0x")) {
+      setVisible(true);
+      toSelectSide = side;
+      listToTokens();
+      getPrice();
+    } else {
+      modalWallet();
+    }
   };
 
   var account = null;
@@ -158,6 +162,11 @@ export default function Defiswap() {
 
   async function modalWallet() {
     setWalletConnect(true);
+    const delayDebounce = setTimeout(() => {
+      if (wallet.includes("0x")) {
+        document.getElementById("buttonLogout").style.display = "block"
+      }
+    }, 200);
   }
 
   async function connect() {
@@ -173,11 +182,13 @@ export default function Defiswap() {
     } else {
       document.getElementById("status").textContent = "CONNECT";
     }
+    
     getWallet(account);
     closeHandler();
   }
   async function onDisconnect() {
     document.getElementById("status").textContent = "CONNECT";
+    getWallet([])
     closeHandler();
   }
 
@@ -221,8 +232,8 @@ export default function Defiswap() {
       document.getElementById("raw").innerHTML = value;
       document.getElementById("minimum_reveived").innerHTML = value;
       document.getElementById("sell_value").innerHTML = sell;
-      document.getElementById("estimate_gas").innerHTML =
-        swapPriceJSON.estimatedGas;
+        const gas = swapPriceJSON.estimatedGas/100000
+    document.getElementById("estimate_gas").innerHTML = `${gas.toFixed(2)}$`;
     } else errorBalance();
   }
   async function errorBalance() {
@@ -270,7 +281,7 @@ export default function Defiswap() {
   }
 
   async function listFromTokens() {
-    let response = await fetch("https://hotpot-defi-app.netlify.app/api/tokens");
+    let response = await fetch("http://localhost:3000/api/tokens");
     let tokenListJSON = await response.json();
     var tokens = tokenListJSON.tokens;
     let parent = document.getElementById("token_list");
@@ -289,7 +300,7 @@ export default function Defiswap() {
     }
   }
   async function listFromLiquidTokens() {
-    let response = await fetch("https://hotpot-defi-app.netlify.app/api/tokens");
+    let response = await fetch("http://localhost:3000/api/tokens");
     let tokenListJSON = await response.json();
     var tokens = tokenListJSON.tokens;
     let parent = document.getElementById("token_list");
@@ -308,7 +319,7 @@ export default function Defiswap() {
     }
   }
   async function listToLiquidTokens() {
-    let response = await fetch("https://hotpot-defi-app.netlify.app/api/tokens");
+    let response = await fetch("http://localhost:3000/api/tokens");
     let tokenListJSON = await response.json();
     var tokens = tokenListJSON.tokens;
     let parent = document.getElementById("token_list");
@@ -446,7 +457,7 @@ export default function Defiswap() {
   }
 
   async function listToTokens() {
-    let response = await fetch("https://hotpot-defi-app.netlify.app/api/tokens");
+    let response = await fetch("http://localhost:3000/api/tokens");
     let tokenListJSON = await response.json();
     var tokens = tokenListJSON.tokens;
     let parent = document.getElementById("token_list");
@@ -480,10 +491,31 @@ export default function Defiswap() {
   async function getValue() {
     console.log("Getting Value");
     const fromLiquid = document.getElementById("from_liquid").value;
-    const toLiquid = document.getElementById("to_liquid").value;
-    const per1 = toLiquid / fromLiquid;
-    const per2 = fromLiquid / toLiquid;
-    if (fromLiquid && toLiquid) {
+    // const toLiquid = document.getElementById("to_liquid").value;
+
+    if (!faddrliquid || !taddrliquid || !fromLiquid) return;
+    let amount = Number(
+      document.getElementById("from_liquid").value * 10 ** fdecliquid
+    );
+    const params = {
+      sellToken: faddrliquid,
+      buyToken: taddrliquid,
+      sellAmount: amount,
+    };
+    const sources = await fetch(
+      zeroxapi + `/swap/v1/quote?${qs.stringify(params)}`
+    );
+    var swapOrders = await sources.json();
+    var rawvalue = swapOrders.buyAmount / 10 ** tdecliquid;
+    var value = rawvalue.toFixed(2);
+    console.log(swapOrders);
+    document.getElementById("to_liquid").value = value;
+    caculatorPer(fromLiquid, value);
+  }
+  async function caculatorPer(from, to) {
+    const per1 = to / from;
+    const per2 = from / to;
+    if (from && to) {
       document.getElementById("to_from").innerHTML = per1.toFixed(2);
       document.getElementById("from_to").innerHTML = per2.toFixed(2);
       document.getElementById("fromPerTo").innerHTML = "100%";
@@ -510,6 +542,7 @@ export default function Defiswap() {
     );
     var swapPriceJSON = await response.json();
     var swapOrders = await sources.json();
+    console.log("huy", swapPriceJSON);
     try {
       await swapOrders.orders.find((item) => {
         document.getElementById("defisource").innerHTML = item.source;
@@ -521,8 +554,8 @@ export default function Defiswap() {
     var rawvalue = swapOrders.buyAmount / 10 ** tdec;
     var value = rawvalue.toFixed(2);
     document.getElementById("to_amount").value = value;
-    document.getElementById("gas_estimate").innerHTML =
-      swapPriceJSON.estimatedGas;
+    const gas = swapPriceJSON.estimatedGas/100000
+    document.getElementById("gas_estimate").innerHTML = `${gas.toFixed(2)}$`;
   }
 
   async function swapit() {
@@ -565,10 +598,41 @@ export default function Defiswap() {
       params: [txParams],
     });
     console.log(ethereum);
-    closeHandler();
-    successSwap();
+    const delayDebounce = setTimeout(() => {
+      closeHandler();
+      successSwap();
+      refresh();
+    }, 10000);
   }
-
+  async function refresh() {
+    getToDec([]);
+    getToAddr([]);
+    getToLogo([]);
+    getFromLogo([]);
+    getFromName("Swap From");
+    getToName("Swap To");
+    getToLogoLiquid([]);
+    getToDecLiquid([]);
+    getFromDecLiquid([]);
+    getFromDec([]);
+    getToAddrLiquid([]);
+    getFromAddrLiquid([]);
+    getFromAddr([]);
+    getToNameLiquid("Select token");
+    getFromNameLiquid("Select token");
+    getFromLogoLiquid([]);
+    document.getElementById("from_liquid").value = null;
+    document.getElementById("to_liquid").value = null;
+    document.getElementById("from_amount").value = null;
+    document.getElementById("to_amount").value = null;
+    document.getElementById("get_balance_from_liquid").innerHTML = "";
+    document.getElementById("get_balance_to_liquid").innerHTML = "";
+    document.getElementById("get_balance").innerHTML = "";
+    document.getElementById("to_from").innerHTML = "";
+    document.getElementById("from_to").innerHTML = "";
+    document.getElementById("gas_estimate").innerHTML = "";
+    document.getElementById("defisource").innerHTML = "";
+  }
   async function successSwap() {
     Swal.fire({
       icon: "success",
@@ -584,10 +648,10 @@ export default function Defiswap() {
     const data = {
       fName: fnameliquid,
       fLogo: flogoliquid,
-      fValue: valueTokenFrom,
+      fValue: Number(valueTokenFrom),
       tName: tnameliquid,
       tLogo: tlogoliquid,
-      tValue: valueTokenTo,
+      tValue: Number(valueTokenTo),
     };
     if (valueTokenTo && valueTokenFrom) {
       if (listLiquid.length != 0) {
@@ -602,38 +666,38 @@ export default function Defiswap() {
     setLocal();
     closeHandler();
     successAddLiquid();
+    refresh();
   }
   async function setLocal() {
     localStorage.setItem("data_liquid", JSON.stringify(listLiquid));
   }
 
   async function checkToken() {
-    const fromValue = document.getElementById("from_amount").value
-    const toValue = document.getElementById("to_amount").value
-    console.log("fromValue:", fromValue);
-    console.log("toValue:", toValue);
+    const fromValue = document.getElementById("from_amount").value;
+    const toValue = document.getElementById("to_amount").value;
     const data_liquid = localStorage.getItem("data_liquid");
-    const checkData = JSON.parse(data_liquid).find(
-      (c) => c.fName == fname && c.tName == tname
-    );
-    console.log(checkData);
-    if (checkData) {
-      if(checkData.fValue >= fromValue && checkData.tValue >= toValue)
-      document.getElementById("lqHotpot").style.display = "block";
-      else {
-        document.getElementById("lqHotpot").style.display = "none";
-        document.getElementById("hotpotLiquid").style.display = "none";
-        document.getElementById("defisource").style.display = "flex";
+    if (data_liquid) {
+      const checkData = JSON.parse(data_liquid).find(
+        (c) => c.fName == fname && c.tName == tname
+      );
+      console.log(checkData);
+      if (checkData) {
+        if (checkData.fValue >= fromValue && checkData.tValue >= toValue)
+          document.getElementById("lqHotpot").style.display = "block";
+        else {
+          document.getElementById("lqHotpot").style.display = "none";
+          document.getElementById("hotpotLiquid").style.display = "none";
+          document.getElementById("defisource").style.display = "flex";
+        }
       }
     }
   }
   async function checkSwitch() {
-    const flag = document.getElementById("checkSwitch").checked
+    const flag = document.getElementById("checkSwitch").checked;
     if (flag) {
       document.getElementById("hotpotLiquid").style.display = "flex";
       document.getElementById("defisource").style.display = "none";
-    }
-    else {
+    } else {
       document.getElementById("hotpotLiquid").style.display = "none";
       document.getElementById("defisource").style.display = "flex";
     }
@@ -664,7 +728,7 @@ export default function Defiswap() {
               display: "flex",
               alignItems: "center",
             }}
-            onClick={checkToken}
+            onClick={refresh}
           >
             <img src="logo.png" width={"50%"} />
           </div>
@@ -749,11 +813,28 @@ export default function Defiswap() {
                   </div>
                 </Text>
               </div>
+              <div style={{display:"flex", justifyContent:"center"}}>
+              <img src={"question.png"} style={{ width: "20px", height:"23px" }} />
+              <div
+                style={{
+                  fontSize: "17px",
+                  marginLeft: "10px",
+                  fontFamily: "SF Pro Display",
+                  textShadow: "0px 0px 1px #000000",
+                  fontWeight: "400",
+                  color: "white",
+                }}
+                className="learnAbout"
+              >
+                Learn about blockchain wallet
+              </div>
+              </div>
             </Modal.Body>
             <Modal.Footer>
-              <Button auto flat color="primary" onPress={onDisconnect}>
+              <Button id="buttonLogout" style={{display:"none"}} auto flat color="primary" onPress={onDisconnect}>
                 Log Out
               </Button>
+              
               <Button auto flat color="error" onClick={closeHandler}>
                 Close
               </Button>
@@ -958,8 +1039,10 @@ export default function Defiswap() {
                         <div>
                           <input
                             type="text"
+                            placeholder="0.0"
                             className="insildeInputSelect"
                             id="to_amount"
+                            readonly="true"
                           />
                         </div>
                       </div>
@@ -998,7 +1081,7 @@ export default function Defiswap() {
                           ></p>
                         </Row>
                       </div>
-                      
+
                       <div>
                         <Row className="Row">
                           <Text
@@ -1027,10 +1110,12 @@ export default function Defiswap() {
                               fontSize: "15px",
                               marginLeft: "4px",
                               textShadow: "0px 0px 1px #000000",
-                              display:"none"
+                              display: "none",
                             }}
                             id="hotpotLiquid"
-                          >HotPot Swap</p>
+                          >
+                            HotPot Swap
+                          </p>
                         </Row>
                       </div>
                       <div id="lqHotpot">
@@ -1047,9 +1132,13 @@ export default function Defiswap() {
                             Useing HotPot Liquidity Provider:{" "}
                           </Text>
                           <label className="switch" id="switch">
-                              <input type="checkbox" onChange={checkSwitch} id="checkSwitch" />
-                              <span className="slider round"></span>
-                            </label>
+                            <input
+                              type="checkbox"
+                              onChange={checkSwitch}
+                              id="checkSwitch"
+                            />
+                            <span className="slider round"></span>
+                          </label>
                         </div>
                       </div>
                     </div>
@@ -1491,6 +1580,7 @@ export default function Defiswap() {
                           placeholder="0.0"
                           className="insildeInputSelect"
                           id="to_liquid"
+                          readonly="true"
                           onChange={(e) => setValue(e.target.value)}
                         />
                       </div>
