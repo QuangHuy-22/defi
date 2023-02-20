@@ -232,8 +232,8 @@ export default function Defiswap() {
       document.getElementById("raw").innerHTML = value;
       document.getElementById("minimum_reveived").innerHTML = value;
       document.getElementById("sell_value").innerHTML = sell;
-      document.getElementById("estimate_gas").innerHTML =
-        swapPriceJSON.estimatedGas;
+        const gas = swapPriceJSON.estimatedGas/100000
+    document.getElementById("estimate_gas").innerHTML = `${gas.toFixed(2)}$`;
     } else errorBalance();
   }
   async function errorBalance() {
@@ -554,8 +554,8 @@ export default function Defiswap() {
     var rawvalue = swapOrders.buyAmount / 10 ** tdec;
     var value = rawvalue.toFixed(2);
     document.getElementById("to_amount").value = value;
-    document.getElementById("gas_estimate").innerHTML =
-      swapPriceJSON.estimatedGas;
+    const gas = swapPriceJSON.estimatedGas/100000
+    document.getElementById("gas_estimate").innerHTML = `${gas.toFixed(2)}$`;
   }
 
   async function swapit() {
